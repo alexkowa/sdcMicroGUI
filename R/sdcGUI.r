@@ -5,10 +5,6 @@
 # just for test case while not in sdcMicro package
 #require(sdcMicro)
 
-
-
-
-
 sdcGUI <- function() {
   if(!is.null(options("quitRwithsdcGUI")[[1]]))#If started via windows binarybuild, auto start update
     updates2()
@@ -3438,9 +3434,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
       layout[6,7, expand=FALSE] <- csvdiscard
       add(importDialogFrame, layout, expand=TRUE)
       #add(importDialogFrame, statusbar)
-      
     }
-    
   }
   
   #outdir is the name of the exported data file from the different export dialogs
@@ -3448,29 +3442,31 @@ writeVars <- function(t1,t2,t3,t4,t5){
     if(existd("sdcObject")){
       reportDialog <- gwindow("Generate Report", parent=window, width=400, height=300)
       reportDialogG <- ggroup(container=reportDialog, horizontal=FALSE)
-      pramRadio <- gcheckbox("Pram", checked=TRUE)
-      kAnonRadio <- gcheckbox("k-Anonymity", checked=TRUE)
-      indivRiskRadio <- gcheckbox("Individual Risk", checked=TRUE)
-      hierRiskRadio <- gcheckbox("Hierachical Risk", checked=TRUE)
-      riskNumKeyVarsRadio <- gcheckbox("Risk of Numerical Key Variables", checked=TRUE)
-      dataUtilityRadio <- gcheckbox("Data Utility", checked=TRUE)
-      localSuppsRadio <- gcheckbox("Local Supression", checked=TRUE)
-      dataUtilityContRadio <- gcheckbox("Data Utility Cont", checked=TRUE)
-      sessionInfoRadio <- gcheckbox("R Session Info", checked=TRUE)
+      #pramRadio <- gcheckbox("Pram", checked=TRUE)
+      #kAnonRadio <- gcheckbox("k-Anonymity", checked=TRUE)
+      #indivRiskRadio <- gcheckbox("Individual Risk", checked=TRUE)
+      #hierRiskRadio <- gcheckbox("Hierachical Risk", checked=TRUE)
+      #riskNumKeyVarsRadio <- gcheckbox("Risk of Numerical Key Variables", checked=TRUE)
+      #dataUtilityRadio <- gcheckbox("Data Utility", checked=TRUE)
+      #localSuppsRadio <- gcheckbox("Local Supression", checked=TRUE)
+      #dataUtilityContRadio <- gcheckbox("Data Utility Cont", checked=TRUE)
+      #sessionInfoRadio <- gcheckbox("R Session Info", checked=TRUE)
       repTitle <- gedit(width=100)
+      repType <- gradio(c("internal (detailled) report","external (overview) report"), horizontal=TRUE)
       svalue(repTitle) <- "SDC-Report"
       reportDialogTitleFrame <- gframe("Title:", container=reportDialogG, horizontal=FALSE)
       add(reportDialogTitleFrame,repTitle)
-      reportDialogFrame <- gframe("Content Types:", container=reportDialogG, horizontal=FALSE)
-      add(reportDialogFrame,pramRadio)
-      add(reportDialogFrame,kAnonRadio)
-      add(reportDialogFrame,indivRiskRadio)
-      add(reportDialogFrame,hierRiskRadio)
-      add(reportDialogFrame,riskNumKeyVarsRadio)
-      add(reportDialogFrame,dataUtilityRadio)
-      add(reportDialogFrame,localSuppsRadio)
-      add(reportDialogFrame,dataUtilityContRadio)
-      add(reportDialogFrame,sessionInfoRadio)
+      reportDialogFrame <- gframe("Report Type:", container=reportDialogG, horizontal=FALSE)
+      add(reportDialogFrame,repType)
+      #add(reportDialogFrame,pramRadio)
+      #add(reportDialogFrame,kAnonRadio)
+      #add(reportDialogFrame,indivRiskRadio)
+      #add(reportDialogFrame,hierRiskRadio)
+      #add(reportDialogFrame,riskNumKeyVarsRadio)
+      #add(reportDialogFrame,dataUtilityRadio)
+      #add(reportDialogFrame,localSuppsRadio)
+      #add(reportDialogFrame,dataUtilityContRadio)
+      #add(reportDialogFrame,sessionInfoRadio)
       reportDialogOutFrame <- gframe("Output Type:", container=reportDialogG, horizontal=FALSE)
       outputRadio <- gradio(c("HTML", "LATEX", "TEXT"), 
           horizontal=TRUE, container=reportDialogOutFrame)
@@ -3502,17 +3498,29 @@ writeVars <- function(t1,t2,t3,t4,t5){
               filename <- paste(filename,".txt",sep="")
             }
 
-            report(obj,
-              pram=svalue(pramRadio),
-              kAnon=svalue(kAnonRadio),
-              indivRisk=svalue(indivRiskRadio),
-              hierRisk=svalue(hierRiskRadio),
-              riskNumKeyVars=svalue(riskNumKeyVarsRadio),
-              dataUtility=svalue(dataUtilityRadio),
-              localSupps=svalue(localSuppsRadio),
-              dataUtilityCont=svalue(dataUtilityContRadio),
-              sessionInfo=svalue(sessionInfoRadio),outdir=outdir,filename=filename,title=svalue(repTitle),
-              format=svalue(outputRadio))
+            #report(obj
+            #  pram=svalue(pramRadio),
+            #  kAnon=svalue(kAnonRadio),
+            #  indivRisk=svalue(indivRiskRadio),
+            #  hierRisk=svalue(hierRiskRadio),
+            #  riskNumKeyVars=svalue(riskNumKeyVarsRadio),
+            #  dataUtility=svalue(dataUtilityRadio),
+            #  localSupps=svalue(localSuppsRadio),
+            #  dataUtilityCont=svalue(dataUtilityContRadio),
+            #  sessionInfo=svalue(sessionInfoRadio),outdir=outdir,filename=filename,title=svalue(repTitle),
+            #  format=svalue(outputRadio))
+            internal <- FALSE
+            if ( svalue(repType, index=TRUE) == 1 ) {
+               internal <- TRUE
+            }
+            report(
+              obj, 
+              outdir=outdir,
+              filename=filename,
+              format=svalue(outputRadio),
+              title=svalue(repTitle),
+              internal=internal
+            )
             dispose(reportDialog)
           })
       
