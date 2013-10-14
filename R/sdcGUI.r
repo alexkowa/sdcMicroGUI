@@ -27,6 +27,7 @@ sdcGUI <- function() {
   tt_slider2 <- "Paramter k2 for risk computation"
   tt_nmr <- "Numerical method risk"
   tt_pram1 <- "PRAM is a probabilistic, perturbative method which can be applied on categorical variables"
+  tt_pram2 <- "View the saved PRAM output."
   tt_genstrat <- "Generate a strata variable"
 #
   mosaic_check <- function(formX){
@@ -420,18 +421,17 @@ sdcGUI <- function() {
   pram_tmp <- function(var,strata_var=NULL){
     xprogress = gwindow("please wait", width=180, height=40)
     glabel("... script running ...", container=xprogress)
-    seed_pram <- round(runif(1)*10e5)
     if(length(strata_var)>0){
       strata_var <- parseVarStr(strata_var)
       Script.add(paste("sdcObject <- pram_strata(sdcObject,variables=", 
               parseVarStr(var),",strata_variables=",strata_var, 
-              ",seed=",seed_pram,")", sep="")) 
-      ActiveSdcObject(pram_strata(ActiveSdcObject(),variables=var,strata_variables=strata_var,seed=seed_pram))
+              "",")", sep="")) 
+      ActiveSdcObject(pram_strata(ActiveSdcObject(),variables=var,strata_variables=strata_var))
     }else{
       strata_var <- parseVarStr(strata_var)
       Script.add(paste("sdcObject <- pram_strata(sdcObject,variables=", 
-              parseVarStr(var),",seed=",seed_pram,")", sep="")) 
-      ActiveSdcObject(pram_strata(ActiveSdcObject(),variables=var,seed=seed_pram))
+              parseVarStr(var),"",")", sep="")) 
+      ActiveSdcObject(pram_strata(ActiveSdcObject(),variables=var))
     } 
     freqCalcIndivRisk()
     dispose(xprogress)
@@ -1916,8 +1916,14 @@ sdcGUI <- function() {
     
     tmp = gframe("Variable Selection", container=p1_windowGroup)
     ###Select categorical variables
+    allVars <- colnames(ActiveSdcObject()@origData)[-c(ActiveSdcVars("numVars"),ActiveSdcVars())]
+    uniq <- sapply(ActiveSdcObject()@origData[,allVars,drop=FALSE],function(x)length(unique(x)))
+    thr_cat <- max(100,nrow(ActiveSdcObject()@origData)*.05)
     keyVars <- ActiveSdcVarsStr()
-    varTab = gtable(data.frame(vars=keyVars, stringsAsFactors=FALSE), multiple=TRUE)
+    allVars <- c(allVars[uniq<=thr_cat],keyVars)
+    
+    
+    varTab = gtable(data.frame(vars=allVars, stringsAsFactors=FALSE), multiple=TRUE)
     size(varTab) <- c(120,200)
     add(tmp, varTab)
     btmp = ggroup(container=tmp, horizontal=FALSE)
@@ -1958,17 +1964,51 @@ sdcGUI <- function() {
           if( length(selTab[])==0 ) {
             gmessage("You need to select at least 1 variable!", title="Information", icon="info", parent=p1_window)
           } else {
-            var <- selTab[]
-            svar <- sTab[]
-            if(length(svar)==0) svar <- NULL
-            pram_tmp(var, svar)
+            if(any(selTab[]%in%keyVars))
+              TFKey <- gconfirm("If a key variable is selected for pram, the risk and frequency
+calculations are not valid anymore. Are you sure you want to pursue with this action?",
+              title="Warning", icon="warn", parent=p1_window)
+            else
+              TFKey <- TRUE
+            if(TFKey){ 
+              var <- selTab[]
+              svar <- sTab[]
+              if(length(svar)==0) svar <- NULL
+              pram_tmp(var, svar)
             
-            dispose(p1_window)
+              dispose(p1_window)
+              enabled(pram_button2) <- TRUE
+              viewpram1()
+              
+            }
           } 
         })
     gbutton("Cancel", container=p1_windowButtonGroup, handler=function(h,...) { dispose(p1_window) })
     gbutton("Help", container=p1_windowButtonGroup, handler=function(h,...) { helpR("pram_strata") })
   }  
+  viewpram1 <- function(...){
+    p1_window = gwindow("Pram", width=230, parent=window)
+    nb <- gnotebook(container=p1_window, closebuttons=FALSE)
+    #Main
+    p1_windowGroup = ggroup(container=nb, horizontal=FALSE,label="Function")
+    tmp = gframe("Pram", container=p1_windowGroup, horizontal=FALSE)
+    #Help
+    t <- gtext(container=nb, label="Help", expand=TRUE)
+    l <- .findHelpPage("pram_strata", "sdcMicro")
+    x <- l$x
+    .insertHelpPage(t, x)
+    svalue(nb) <- 1
+    tmp = gframe("Pram output", container=p1_windowGroup)
+    ps <- ActiveSdcObject()@pram$summary
+    
+    varTab = gtable(ps, multiple=TRUE)
+    size(varTab) <- c(400,300)
+    add(tmp, varTab)
+    
+    
+    gbutton("Close", container=p1_windowGroup, handler=function(h,...) { dispose(p1_window) })
+    gbutton("Help", container=p1_windowGroup, handler=function(h,...) { helpR("pram_strata") })
+  }
   # function for gr_button2
   # opens script window to execute R commands directly
   # globalRecodeGroup function
@@ -3899,6 +3939,11 @@ writeVars <- function(t1,t2,t3,t4,t5){
   tooltip(pram_button1) <- tt_pram1
   add(tmpCP, pram_button1)
   enabled(pram_button1) <- FALSE
+  pram_button2 = gbutton("view pram output",
+      handler=function(h,...) viewpram1() )
+  tooltip(pram_button1) <- tt_pram2
+  add(tmpCP, pram_button2)
+  enabled(pram_button2) <- FALSE
   
   # Start - localSupp Container
   tmp = gframe("Local suppression", container=tmpCP, horizontal=FALSE)
