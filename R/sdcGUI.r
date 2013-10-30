@@ -710,7 +710,7 @@ sdcGUI <- function() {
     .insertHelpPage(t, x)
     svalue(nb) <- 1
     
-    tmp = gframe("Aggregation level", container=nm2_windowGroup, horizontal=FALSE)
+    tmp = gframe("Aggregation level (size of the groups)", container=nm2_windowGroup, horizontal=FALSE)
     ntmp = ggroup(container=tmp)
     aggrSel = gslider(from=2, to=20, by=1)
     tooltip(aggrSel) <- tt_aggr
@@ -1422,9 +1422,10 @@ sdcGUI <- function() {
     facTab <- gr3_windowButton1 <- gr3_windowButton2 <- recButton2 <- rb <- SummaryTab <- rbfun <- list()
     for(i in 1:length(keyname)){
       #Main
-      tmp <- ggroup(horizontal=FALSE, container=nb,label=keyname[i]) 
-      glabel("Type:",container=tmp)
-      rb[[i]] <- gradio(c("Numeric","Factor"), container=tmp)
+      tmp <- ggroup(horizontal=FALSE, container=nb,label=keyname[i],expand=FALSE)
+      tmp1 <- gframe(text="Type:",horizonal=FALSE,container=tmp)
+      #glabel("Type:",container=tmp)
+      rb[[i]] <- gradio(c("Numeric","Factor"), container=tmp1)
       rbfun[[i]] <- eval(parse(text=paste("
                       function(h,...) {
                       index <- ",i,"
@@ -1446,7 +1447,8 @@ sdcGUI <- function() {
       
       #glabel("Head:",container=tmp)
       #gr1_head[[i]] <- gtext("", container=tmp, height=50, width=250)
-      glabel("Frequencies:",container=tmp)
+      tmp1 <- gframe(text="Frequencies:",horizonal=FALSE,container=tmp)
+      #glabel("Frequencies:",container=tmp1)
       dd_summary <- t(as.data.frame(table(xtmp[,keyname[i]])))
       colnames(dd_summary)<- as.character(dd_summary[1,])
       dd_summary <- dd_summary[-1,,drop=FALSE]
@@ -1454,7 +1456,7 @@ sdcGUI <- function() {
       colnames(Supdate) <- paste("Cat",1:ncol(Supdate),sep="")
       SummaryTab[[i]] <- gtable(Supdate)
       size(SummaryTab[[i]]) <- c(800,100)
-      add(tmp, SummaryTab[[i]])
+      add(tmp1, SummaryTab[[i]])
       #putd("SummaryTab",SummaryTab[[i]])
       
       #gr1_summary[[i]] <- gtext("", container=tmp, height=50, width=250)
@@ -1567,7 +1569,7 @@ sdcGUI <- function() {
                       ',sep="")))
       
       
-      gr3_windowButton1[[i]] <- gbutton("rename",
+      gr3_windowButton1[[i]] <- gbutton("Rename selected level",
           handler= renameFacVarFun[[i]])
       enabled(gr3_windowButton1[[i]]) <- FALSE
       groupFacVarFun[[i]] <- eval(parse(text=paste('
@@ -1577,7 +1579,7 @@ sdcGUI <- function() {
                       }
                       ',sep="")))
       
-      gr3_windowButton2[[i]] <-  gbutton("group",
+      gr3_windowButton2[[i]] <-  gbutton("Group selected levels",
           handler=groupFacVarFun[[i]])
       enabled(gr3_windowButton2[[i]]) <- FALSE
       add(btmp, gr3_windowButton1[[i]])
@@ -1644,13 +1646,14 @@ sdcGUI <- function() {
     FreqT <- gtable(data.frame(apply(tabDat,2,function(x)as.character(x)),stringsAsFactors=FALSE))
     size(FreqT) <- c(900,500)
     FreqTT_2 <- gframe("Frequencies for combinations of cat. key variables",container=FreqTT)
+    tooltip(FreqT) <- "fk=sample frequency\nFk=grossed up population frequency"
     add(FreqTT_2 , FreqT)
     putd("FreqT",FreqT)
     #Help
-    t <- gtext(container=nb, label="Help", expand=TRUE)
-    l <- .findHelpPage("globalRecode", "sdcMicro")
-    x <- l$x
-    .insertHelpPage(t, x)
+    #t <- gtext(container=nb, label="Help", expand=TRUE)
+    #l <- .findHelpPage("globalRecode", "sdcMicro")
+    #x <- l$x
+    #.insertHelpPage(t, x)
     # First Keyvar-Tab
     svalue(nb) <- 1
     gseparator(container=gr1_main)
@@ -2118,7 +2121,7 @@ calculations are not valid anymore. Are you sure you want to pursue with this ac
     
       svalue(nm_risk_print) <- paste("Disclosure Risk is between: \n [0% ; ", 
 			  round(100*risk$numeric,2), "%] (current)\n 
-				(orig: ~", 100, "%) \n",sep="")
+				(orig: [0 %,", 100, "%]) \n",sep="")
 
 svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ", 
 		round(utility$il1,2),"\n  - Difference Eigenvalues: ",round(utility$eigen*100,2)," %",
@@ -2227,7 +2230,7 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
     
     rtmp = ggroup(container=mtmp, horizontal=FALSE)
     
-    tmp = gframe("categorical", container=rtmp)
+    tmp = gframe("Categorical", container=rtmp)
     btmp = ggroup(container=tmp, horizontal=FALSE)
     addSpring(btmp)
     gbutton(">>", container=btmp, handler=function(h,...) { ft(catTab, varTab, svalue(varTab), "keyLen", 1) })
@@ -2237,7 +2240,7 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
     size(catTab) <- c(120,150)
     add(tmp, catTab)
     
-    tmp = gframe("numerical", container=rtmp)
+    tmp = gframe("Numerical", container=rtmp)
     btmp = ggroup(container=tmp, horizontal=FALSE)
     addSpring(btmp)
     gbutton(">>", container=btmp, handler=function(h,...) { ft(numTab, varTab, svalue(varTab), "numLen", 1) })
@@ -2247,7 +2250,7 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
     size(numTab) <- c(120,150)
     add(tmp, numTab)
     
-    tmp = gframe("weight", container=rtmp)
+    tmp = gframe("Weight", container=rtmp)
     btmp = ggroup(container=tmp, horizontal=FALSE)
     addSpring(btmp)
     gbutton(">>", container=btmp, handler=function(h,...) { ft(wTab, varTab, svalue(varTab), "wLen", 1) })
@@ -2257,7 +2260,7 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
     size(wTab) <- c(120,50)
     add(tmp, wTab)
     ##Household Selection
-    tmp = gframe("household id", container=rtmp)
+    tmp = gframe("Cluster ID (e.g. household ID)", container=rtmp)
     btmp = ggroup(container=tmp, horizontal=FALSE)
     addSpring(btmp)
     gbutton(">>", container=btmp, handler=function(h,...) { ft(hTab, varTab, svalue(varTab), "hLen", 1) })
@@ -2267,7 +2270,7 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
     size(hTab) <- c(120,50)
     add(tmp, hTab)
     
-    tmp = gframe("strata", container=rtmp)
+    tmp = gframe("Strata", container=rtmp)
     btmp = ggroup(container=tmp, horizontal=FALSE)
     addSpring(btmp)
     gbutton(">>", container=btmp, handler=function(h,...) { ft(sTab, varTab, svalue(varTab), "sLen", 1) })
@@ -2371,14 +2374,15 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
                 keynofac <- keyV[!as.vector(sapply(keyV,function(x)is.factor(ActiveDataSet()[,x])))]
                 if(length(keynofac)>0){
                   keynofac <- paste(keynofac,collapse=",")
-                  gmessage(paste("The variables ",keynofac," are selected as categoric but are not of type factor.
-                              In the next window you can change this, you can reopen this window by clicking \"Recode\"",sep=""),
+                  
+                  gmessage(paste("The variables ",keynofac," are selected as categoric but not recognized as being in the correct format.
+This can be confirmed or changed in the next window, you can reopen this window by clicking \"Recode\"",sep=""),
                       title="Information", parent=window)
                   vc()
                 }
               }
             } else {
-              gmessage("You have to select at least  one numeric or categoric variable and optional one weight variable, one household ID variable and several strata variables.",
+              gmessage("You have to select at least  one numeric or categoric variable and optional one weight variable, one cluster ID variable and several strata variables.",
                   title="Information", icon="warning", parent=window)
             }
           }
@@ -2552,7 +2556,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
           })
       if( existd("activeDataSet") ) {
         if( dim(ActiveDataSet())[1] > 4000 ) {
-          gmessage("Operations in this dataset may require some time, so please be patient.", title="Information",
+          gmessage("Large data sets require extensive computation time, so please be patient.", title="Information",
               icon="info", parent=window)
         }
         svalue(dslab) <- paste(getd("dataSetName")," [n=",nrow(ActiveDataSet()),"]",sep="")
@@ -3768,16 +3772,16 @@ writeVars <- function(t1,t2,t3,t4,t5){
   mbar = list()
   mbar$GUI$Quit$handler = quitGUI
   mbar$GUI$Restart$handler = restartGUI
-  mbar$GUI$"Check for Updates"$handler = updates22 <- function(...)updates2(restart=TRUE)
-  mbar$Data$"Load R-Dataset"$handler = loadDataSet
+  mbar$GUI$"Check for updates"$handler = updates22 <- function(...)updates2(restart=TRUE)
   mbar$Data$"Choose R-Dataset"$handler = setDataSet
-  mbar$Data$"Save Dataset to"$File$handler = saveToFile
-  mbar$Data$"Save Dataset to"$"R Object"$handler = saveToVariable
   #TODO: change handler
+  mbar$Data$Import$"Import R Dataset"$handler = loadDataSet
   mbar$Data$Import$"Import CSV"$handler = importCSV
   mbar$Data$Import$"Import SPSS"$handler = importSPSS
   mbar$Data$Import$"Import SAS"$handler = importSAS
   mbar$Data$Import$"Import STATA"$handler = loadSTATA
+  mbar$Data$Export$"Export R Dataset"$handler = saveToFile
+  mbar$Data$Export$"Export R Object"$handler = saveToVariable
   mbar$Data$Export$"Export CSV"$handler = exportCSV
   mbar$Data$Export$"Export SPSS"$handler = exportSPSS
   mbar$Data$Export$"Export SAS"$handler = exportSAS
@@ -3812,7 +3816,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
   nbMain <- gnotebook(container=mainGroupX, closebuttons=FALSE)
   mainGroup = ggroup(container=nbMain, horizontal=FALSE,label="Identifiers")
   mainGroupCat = ggroup(container=nbMain, horizontal=TRUE,label="Categorical")
-  mainGroupCont = ggroup(container=nbMain, horizontal=TRUE,label="continuous")
+  mainGroupCont = ggroup(container=nbMain, horizontal=TRUE,label="Continuous")
   svalue(nbMain) <- 1
   # End - add menu
   # Start - variable Selection Container
@@ -3830,7 +3834,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
   }
   gb1 = gbutton(text="Select key variables / Reset", container=varSelGroupButton,
       handler=function(h,...) confirmSelection())
-  tooltip(gb1) <- "(Re)-identify categorical, numerical variables (and the weight variable, the household ID variable and the strata variables)"
+  tooltip(gb1) <- "(Re)-identify categorical, numerical variables (and the weight variable, the cluster ID variable and the strata variables)"
   enabled(gb1) <- FALSE
   
   gb2 = gbutton(text="Remove direct identifiers", container=varSelGroupButton,
@@ -3842,28 +3846,28 @@ writeVars <- function(t1,t2,t3,t4,t5){
   
   mtmp = ggroup(container=varSelGroup, horizontal=FALSE, expand=TRUE)
   tmp = gframe("Selected key variables", container=mtmp, horizontal=FALSE)
-  tmpCat = gframe("Categorical", container=tmp, horizontal=FALSE,pos=.3)
+  tmpCat = gframe("Categorical", container=tmp, horizontal=FALSE)
   tab1 = glabel("not selected\n")#categorical info
   tooltip(tab1) <- tt_selVar
   add(tmpCat, tab1, expand=TRUE)
   addSpace(tmp, 1)
-  tmpNum = gframe("Numerical", container=tmp, horizontal=FALSE,pos=.3)
+  tmpNum = gframe("Numerical", container=tmp, horizontal=FALSE)
    tab2 <- glabel("not selected\n")#numerical info
   tooltip(tab2) <- tt_selVar
   add(tmpNum, tab2, expand=TRUE)
   addSpace(mtmp, 4,horizontal=FALSE)
   tmp = gframe("Selected auxiliary variables", container=mtmp, horizontal=FALSE)
-  tmpW = gframe("Weight", container=tmp, horizontal=FALSE,pos=.3)
+  tmpW = gframe("Weight", container=tmp, horizontal=FALSE)
   tab3 <- glabel("not selected\n")#weight info
   tooltip(tab3) <- tt_selVar
   add(tmpW, tab3, expand=TRUE)
   addSpace(tmp, 1)
-  tmpHH = gframe("Household ID", container=tmp, horizontal=FALSE,pos=.3)
+  tmpHH = gframe("Cluster ID", container=tmp, horizontal=FALSE)
   tab4 <- glabel("not selected\n")# household info
   tooltip(tab4) <- tt_selVar
   add(tmpHH, tab4, expand=TRUE)
   addSpace(tmp, 1)
-  tmpSt = gframe("Strata", container=tmp, horizontal=FALSE,pos=.3)
+  tmpSt = gframe("Strata", container=tmp, horizontal=FALSE)
   tab5 <- glabel("not selected\n")#strata info
   tooltip(tab5) <- tt_selVar
   add(tmpSt, tab5, expand=TRUE)
@@ -3897,7 +3901,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
   tooltip(ir_print)<- tt_ir
   add(ir_tmp, ir_print)
 
-  vh_button = gbutton("View Observations with high risk", container=ir_tmp,
+  vh_button = gbutton("View observations with risk above the benchmark", container=ir_tmp,
       handler=function(h, ...) viewhigh())
   enabled(vh_button) <- FALSE
   tooltip(vh_button) <- "Show 20 observations with highest risk"
@@ -3934,31 +3938,28 @@ writeVars <- function(t1,t2,t3,t4,t5){
   #add(tmp, gr_button2)
   # End - globalRecode Container
   # Start - pram Container
-  pram_button1 = gbutton("pram",
+  pram_button1 = gbutton("Pram",
       handler=function(h,...) pram1() )
   tooltip(pram_button1) <- tt_pram1
   add(tmpCP, pram_button1)
   enabled(pram_button1) <- FALSE
-  pram_button2 = gbutton("view pram output",
-      handler=function(h,...) viewpram1() )
   tooltip(pram_button1) <- tt_pram2
-  add(tmpCP, pram_button2)
-  enabled(pram_button2) <- FALSE
-  
   # Start - localSupp Container
-  tmp = gframe("Local suppression", container=tmpCP, horizontal=FALSE)
-  ls_button1 = gbutton("optimal (k-Anonymity)",
+  ls_button1 = gbutton("Optimal local supression (k-Anonymity)",
       handler=function(h,...) ls4() )
   tooltip(ls_button1) <- tt_ls1
   enabled(ls_button1) <- FALSE
-  add(tmp, ls_button1)
-  ir_button = gbutton("threshold (indiv.Risk))", 
+  add(tmpCP, ls_button1)
+  ir_button = gbutton("Threshold local supression(indiv.Risk))", 
       handler=function(h, ...) plotIndivRisk())
-  add(tmp, ir_button)
+  add(tmpCP, ir_button)
   tooltip(ir_button) <- tt_pir
   enabled(ir_button) <- FALSE
 
-  
+  pram_button2 = gbutton("View pram output",
+      handler=function(h,...) viewpram1() )
+  add(tmpCP, pram_button2)
+  enabled(pram_button2) <- FALSE
   
   #globalRecodeGroupRight = ggroup(container=globalRecodeGroup, horizontal=FALSE)
   #tmp = gframe("Experts only", container=globalRecodeGroupRight)

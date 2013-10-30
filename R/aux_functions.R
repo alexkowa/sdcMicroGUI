@@ -140,7 +140,7 @@ printMeasure_risk <- function(obj){
   cat("\n")
   cat("--------------------------\n")
   s <- sum((risk$individual[,1] > median(risk$individual[,1])+2*mad(risk$individual[,1])) & (risk$indiviual[,1] > 0.1))
-  cat(paste(s,"obs. with higher risk than the main part\n"))
+  cat(paste(s,"obs. exceed the benchmark\n"))
   cat("Expected no. of re-identifications:\n",round(risk$global$risk_ER,2),"")
   cat("(",round(risk$global$risk_pct,2),"%)\n")
   if(is.na(risk$global$threshold))
