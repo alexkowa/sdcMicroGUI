@@ -193,7 +193,7 @@ printRecode <- function(obj){
 returnRecode <- function(obj=NULL){
   if(!is.null(obj)){
     k <- length(obj@keyVars)
-    col1 <- colnames(obj@origData[,obj@keyVars])
+    col1 <- colnames(obj@origData[,obj@keyVars,drop=FALSE])
     tab <- tab2 <- ssize <- ssize2 <- msize <- msize2 <- numeric(k)
     for(i in 1:k){
       tab2[i] <- length(unique(obj@origData[,obj@keyVars[i]]))
