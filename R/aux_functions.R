@@ -162,10 +162,6 @@ printMeasure_risk <- function(obj){
   }
 }
 printRecode <- function(obj){
-  cat("Reported is the")
-  cat("\n")
-  cat(" number | mean size and | size of smallest category")
-  cat("\n")
   k <- length(obj@keyVars)
   tab <- tab2 <- ssize <- ssize2 <- msize <- msize2 <- numeric(k)
   names(tab) <- colnames(obj@origData[,obj@keyVars])
@@ -188,6 +184,35 @@ printRecode <- function(obj){
     cat("-------------\n")
     cat(nam, paste(rep(".",2+maxnam-nchar(nam)), collapse=""),tab[i],"|",msize[i],"|",ssize[i], 
         "\n     (orig:", tab2[i],"|",msize2[i],"|",ssize2[i],") \n")
+  }
+  cat("-------------\n")
+  cat("For each variable, the following key figures are computed:\n")
+  cat("\n  the number of categories \n  the mean size of the groups \n  the size of smallest group")
+  cat("\n")
+}
+returnRecode <- function(obj=NULL){
+  if(!is.null(obj)){
+    k <- length(obj@keyVars)
+    col1 <- colnames(obj@origData[,obj@keyVars])
+    tab <- tab2 <- ssize <- ssize2 <- msize <- msize2 <- numeric(k)
+    for(i in 1:k){
+      tab2[i] <- length(unique(obj@origData[,obj@keyVars[i]]))
+      tab[i] <- length(unique(obj@manipKeyVars[,i]))
+      t2 <- table(obj@origData[,obj@keyVars[i]])
+      t1 <- table(obj@manipKeyVars[,i])
+      msize[i] <- round(mean(t1),0)
+      msize2[i] <- round(mean(t2),0)
+      ssize[i] <- min(t1)
+      ssize2[i] <- min(t2)
+    }
+    col2 <- paste(tab," (",tab2,")",sep="")
+    col3 <- paste(msize," (",msize2,")",sep="")
+    col4 <- paste(ssize," (",ssize2,")",sep="")
+    return(data.frame(keyVar=col1,"number of categories"=col2,"mean size"=col3,
+            "size of smallest"=col4,stringsAsFactors =FALSE))
+  }else{
+    return(data.frame(keyVar=1,"Categories"=1,"Mean size"=1,
+            "Smallest"=1,stringsAsFactors =FALSE)[FALSE,,drop=FALSE])
   }
 }
 printMeasure_riskComp <- function(obj){
