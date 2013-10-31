@@ -1298,7 +1298,7 @@ sdcGUI <- function() {
               parseVar(breaks), ", labels=", parseVarStr(labels), ")", sep=""))
     }
     ActiveSdcObject(globalRecode(ActiveSdcObject(),column=var,breaks=breaks,labels=labels))
-    freqCalcIndivRisk()
+    #freqCalcIndivRisk()
   }
   
   # globalRecodeGroup function
@@ -1343,57 +1343,113 @@ sdcGUI <- function() {
         }
       }
     }
-    updateSummary <- function(v){
-      index <- which(ActiveSdcVarsStr()==v)
-      if(existd("SummaryTab")){
-        #gr1_head <- getd("gr1_head")
-        #gr1_summary <- getd("gr1_summary")
-        SummaryTab <- getd("SummaryTab")
-        xtmp <- ActiveSdcObject()@manipKeyVars
-        var <- xtmp[,v]
-        if(isExtant(SummaryTab[[index]])){
-          #svalue(gr1_head[[index]]) <- capture.output(print(head(var)),append=FALSE)
-          Supdate <- t(as.data.frame(table(var)))
-          SummaryTab[[index]][,1:ncol(Supdate)] <- Supdate
-          if(ncol(SummaryTab[[index]][,])>ncol(Supdate)){
-            ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
-            SummaryTab[[index]][1,ind] <- rep("",length(ind))
-            SummaryTab[[index]][2,ind] <- rep("",length(ind))
-            names(SummaryTab[[index]])[ind] <- rep("x_x",length(ind ))
-          }
-          #names(SummaryTab[[index]]) <- colnames(dd_summary)
-          #svalue(gr1_summary[[index]]) <- capture.output(print(summary(var)),append=FALSE)
-        }
-        dev.set(getd("gdev")[[index]])
-        if(is.factor(var)){
-          try(plot(var,main=v),silent=TRUE)
-        }else if(is.numeric(var)){
-          try(hist(var,main=v),silent=TRUE)
-        }
-        keyname <- ActiveSdcVarsStr()
-        varmoslist <- keyname[unlist(lapply(keyname,function(x)is.factor(xtmp[,x])))]
-        mosdev <- getd("mosdev")
-        dev.set(mosdev)
-        if(length(varmoslist)>=2){
-          formX <- varmoslist
-          try(mosaic_check(formX),silent=TRUE)
-        }else{
-          try(plot(1,main="Two variables as factors needed!"),silent=TRUE)
-        }
-        FreqT <- getd("FreqT")
-        if(isExtant(FreqT)){
-          m1 <- ActiveSdcVars("risk")$individual
-          m1[,"risk"] <- round(m1[,"risk"],5)
+    updateSummary <- function(v=NULL){
+      if(!is.null(v)){
+        index <- which(ActiveSdcVarsStr()==v)
+        if(existd("SummaryTab")){
+          #gr1_head <- getd("gr1_head")
+          #gr1_summary <- getd("gr1_summary")
+          SummaryTab <- getd("SummaryTab")
           xtmp <- ActiveSdcObject()@manipKeyVars
-          tabDat <- cbind(xtmp[,keyname,drop=FALSE],m1)
-          ind <- !duplicated(apply(xtmp[,keyname,drop=FALSE],1,function(x)paste(x,collapse="_")))
-          tabDat <- tabDat[ind,]
-          tabDat <- tabDat[order(as.numeric(tabDat$risk),decreasing=TRUE),]
-          tabDat <- apply(tabDat,2,function(x)as.character(x))
-          FreqT[,] <- data.frame(tabDat,stringsAsFactors=FALSE)
+          var <- xtmp[,v]
+          if(isExtant(SummaryTab[[index]])){
+            #svalue(gr1_head[[index]]) <- capture.output(print(head(var)),append=FALSE)
+            Supdate <- t(as.data.frame(table(var)))
+            SummaryTab[[index]][,1:ncol(Supdate)] <- Supdate
+            if(ncol(SummaryTab[[index]][,])>ncol(Supdate)){
+              ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
+              SummaryTab[[index]][1,ind] <- rep("",length(ind))
+              SummaryTab[[index]][2,ind] <- rep("",length(ind))
+              names(SummaryTab[[index]])[ind] <- rep("x_x",length(ind ))
+            }
+            #names(SummaryTab[[index]]) <- colnames(dd_summary)
+            #svalue(gr1_summary[[index]]) <- capture.output(print(summary(var)),append=FALSE)
+          }
+          dev.set(getd("gdev")[[index]])
+          if(is.factor(var)){
+            try(plot(var,main=v),silent=TRUE)
+          }else if(is.numeric(var)){
+            try(hist(var,main=v),silent=TRUE)
+          }
+          keyname <- ActiveSdcVarsStr()
+          varmoslist <- keyname[unlist(lapply(keyname,function(x)is.factor(xtmp[,x])))]
+          mosdev <- getd("mosdev")
+          dev.set(mosdev)
+          if(length(varmoslist)>=2){
+            formX <- varmoslist
+            try(mosaic_check(formX),silent=TRUE)
+          }else{
+            try(plot(1,main="Two variables as factors needed!"),silent=TRUE)
+          }
+          FreqT <- getd("FreqT")
+          if(isExtant(FreqT)){
+            m1 <- ActiveSdcVars("risk")$individual
+            m1[,"risk"] <- round(m1[,"risk"],5)
+            xtmp <- ActiveSdcObject()@manipKeyVars
+            tabDat <- cbind(xtmp[,keyname,drop=FALSE],m1)
+            ind <- !duplicated(apply(xtmp[,keyname,drop=FALSE],1,function(x)paste(x,collapse="_")))
+            tabDat <- tabDat[ind,]
+            tabDat <- tabDat[order(as.numeric(tabDat$risk),decreasing=TRUE),]
+            tabDat <- apply(tabDat,2,function(x)as.character(x))
+            FreqT[,] <- data.frame(tabDat,stringsAsFactors=FALSE)
+          }
+        }
+        freqCalcIndivRisk()
+      }else{
+        indexAllKeys <- 1:length(ActiveSdcVars())
+        if(existd("SummaryTab")){
+          
+          #gr1_head <- getd("gr1_head")
+          #gr1_summary <- getd("gr1_summary")
+          SummaryTab <- getd("SummaryTab")
+          xtmp <- ActiveSdcObject()@manipKeyVars
+          for(index in indexAllKeys){
+            v <- ActiveSdcVarsStr()[index]
+            var <- xtmp[,v]
+            if(isExtant(SummaryTab[[index]])){
+              #svalue(gr1_head[[index]]) <- capture.output(print(head(var)),append=FALSE)
+              Supdate <- t(as.data.frame(table(var)))
+              SummaryTab[[index]][,1:ncol(Supdate)] <- Supdate
+              if(ncol(SummaryTab[[index]][,])>ncol(Supdate)){
+                ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
+                SummaryTab[[index]][1,ind] <- rep("",length(ind))
+                SummaryTab[[index]][2,ind] <- rep("",length(ind))
+                names(SummaryTab[[index]])[ind] <- rep("x_x",length(ind ))
+              }
+              #names(SummaryTab[[index]]) <- colnames(dd_summary)
+              #svalue(gr1_summary[[index]]) <- capture.output(print(summary(var)),append=FALSE)
+            }
+            dev.set(getd("gdev")[[index]])
+            if(is.factor(var)){
+              try(plot(var,main=v),silent=TRUE)
+            }else if(is.numeric(var)){
+              try(hist(var,main=v),silent=TRUE)
+            }
+          }
+          keyname <- ActiveSdcVarsStr()
+          varmoslist <- keyname[unlist(lapply(keyname,function(x)is.factor(xtmp[,x])))]
+          mosdev <- getd("mosdev")
+          dev.set(mosdev)
+          if(length(varmoslist)>=2){
+            formX <- varmoslist
+            try(mosaic_check(formX),silent=TRUE)
+          }else{
+            try(plot(1,main="Two variables as factors needed!"),silent=TRUE)
+          }
+          FreqT <- getd("FreqT")
+          if(isExtant(FreqT)){
+            m1 <- ActiveSdcVars("risk")$individual
+            m1[,"risk"] <- round(m1[,"risk"],5)
+            xtmp <- ActiveSdcObject()@manipKeyVars
+            tabDat <- cbind(xtmp[,keyname,drop=FALSE],m1)
+            ind <- !duplicated(apply(xtmp[,keyname,drop=FALSE],1,function(x)paste(x,collapse="_")))
+            tabDat <- tabDat[ind,]
+            tabDat <- tabDat[order(as.numeric(tabDat$risk),decreasing=TRUE),]
+            tabDat <- apply(tabDat,2,function(x)as.character(x))
+            FreqT[,] <- data.frame(tabDat,stringsAsFactors=FALSE)
+          }
         }
       }
-      freqCalcIndivRisk()
     }
     showLevels <- function(h, ...) {
       if(existd("facTab")){
@@ -1423,6 +1479,8 @@ sdcGUI <- function() {
     keyname <- ActiveSdcVarsStr()
     gr1_window = gwindow("Choose parameters for globalRecode", width=1100, parent=window)
     gr1_main <-  gframe("", container=gr1_window, horizontal=FALSE)
+    undogr <- ggroup(container=gr1_main)
+    undobt <- gbutton("Undo last action",handler=function(h,...){OneStepBack();updateSummary()},container=undogr)
     nb <- gnotebook(container=gr1_main, closebuttons=FALSE)
     #Main
     xtmp <- ActiveSdcObject()@manipKeyVars
@@ -1543,7 +1601,9 @@ sdcGUI <- function() {
                       globalRecode_tmp (name, breaks, labels)     
                       #var <- ActiveDataSet()[,name]
                       rb <- getd("rb")
+                      blockHandler(rb[[index]])
                       svalue(rb[[index]]) <- "Factor"
+                      unblockHandler(rb[[index]])
                       updateSummary(name)
                       }
                       }',sep="")))
@@ -1765,7 +1825,8 @@ sdcGUI <- function() {
     svalue(nb) <- 1
     
     
-    tmp = gframe("Select variables to be removed from data set", container=p1_windowGroup)
+    tmp = gframe('<span weight="bold" size="medium">Select variables to be removed from data set</span>',
+        container=p1_windowGroup,markup=TRUE)
     ###Select categorical variables
     keyVars <- ActiveSdcVarsStr("keyVars")
     numVars <- ActiveSdcVarsStr("numVars")
@@ -1800,9 +1861,13 @@ sdcGUI <- function() {
             gmessage("You need to select at least 1 variable!", title="Information", icon="info", parent=p1_window)
           } else {
             var <- selTab[]
-            removeDirectID_tmp(var)
+            message <- paste("Do you really want to remove the following variables from the data set?\n",paste(var,collapse=","))
+            TF <- gconfirm(message, title="Confirm", icon = "question", parent=p1_window)
             
-            dispose(p1_window)
+            if(TF){
+              removeDirectID_tmp(var)
+              dispose(p1_window)
+            }
           } 
         })
     gbutton("Cancel ", container=p1_windowButtonGroup, handler=function(h,...) { dispose(p1_window) })
