@@ -1360,7 +1360,7 @@ sdcGUI <- function() {
               ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
               SummaryTab[[index]][1,ind] <- rep("",length(ind))
               SummaryTab[[index]][2,ind] <- rep("",length(ind))
-              names(SummaryTab[[index]])[ind] <- rep("x_x",length(ind ))
+              names(SummaryTab[[index]])[ind] <- rep("I",length(ind ))
             }
             #names(SummaryTab[[index]]) <- colnames(dd_summary)
             #svalue(gr1_summary[[index]]) <- capture.output(print(summary(var)),append=FALSE)
@@ -1414,7 +1414,7 @@ sdcGUI <- function() {
                 ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
                 SummaryTab[[index]][1,ind] <- rep("",length(ind))
                 SummaryTab[[index]][2,ind] <- rep("",length(ind))
-                names(SummaryTab[[index]])[ind] <- rep("x_x",length(ind ))
+                names(SummaryTab[[index]])[ind] <- rep("I",length(ind ))
               }
               #names(SummaryTab[[index]]) <- colnames(dd_summary)
               #svalue(gr1_summary[[index]]) <- capture.output(print(summary(var)),append=FALSE)
@@ -1481,6 +1481,7 @@ sdcGUI <- function() {
     gr1_main <-  gframe("", container=gr1_window, horizontal=FALSE)
     undogr <- ggroup(container=gr1_main)
     undobt <- gbutton("Undo last action",handler=function(h,...){OneStepBack();updateSummary()},container=undogr)
+    tooltip(undobt) <- "Undo is only possible for one step and data sets with less than 100 000 rows."
     nb <- gnotebook(container=gr1_main, closebuttons=FALSE)
     #Main
     xtmp <- ActiveSdcObject()@manipKeyVars
@@ -3816,9 +3817,9 @@ writeVars <- function(t1,t2,t3,t4,t5){
           nm_risk_print_function()
         }
       }else
-        gmessage("Undo is not possible, because no previous sdc object was found.", title="Attention", icon="error", parent=window)
+        gmessage("Undo is not possible, because no previous sdc object was found.\n (Undo is only possible for one step and data sets with less than 100 000 rows.)", title="Attention", icon="error", parent=window)
   }else
-      gmessage("Undo is not possible, because no active sdc object was found.", title="Attention", icon="error", parent=window)
+      gmessage("Undo is not possible, because no active sdc object was found.\n (Undo is only possible for one step and data sets with less than 100 000 rows.)", title="Attention", icon="error", parent=window)
   }
   restartGUI <- function(...) {
     val <- gconfirm("Do you really want to delete everything and restart the GUI?", parent=window)
