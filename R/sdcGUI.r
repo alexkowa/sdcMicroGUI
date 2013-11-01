@@ -488,7 +488,7 @@ sdcGUI <- function() {
           Var=svalue(VarSel)
           xprogress = gwindow("please wait", width=180, height=40)
           glabel("... script running ...", container=xprogress)
-          Script.add(paste("sdcObject <- localSupp(sdcObject,threshold=", parseVar(getd("threshold")),"keyVar=",parseVarStr(Var),")",sep=""))
+          Script.add(paste("sdcObject <- localSupp(sdcObject,threshold=", parseVar(getd("threshold")),",keyVar=",parseVarStr(Var),")",sep=""))
           
           ActiveSdcObject(localSupp(ActiveSdcObject(), threshold=getd("threshold"),keyVar=Var))
           freqCalcIndivRisk()
