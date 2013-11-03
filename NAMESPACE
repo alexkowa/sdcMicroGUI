@@ -1,2 +1,4 @@
+import(vcd, foreign, Hmisc)
 export(plot.indivRisk,sdcGUI,sdcGUIoutput)
+import(cairoDevice, gWidgetsRGtk2,sdcMicro)
 S3method(plot, indivRisk)
