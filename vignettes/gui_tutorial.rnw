@@ -1,0 +1,808 @@
+%\VignetteIndexEntry{GUI Tutorial for sdcMicroGUI}
+\documentclass[12pt]{scrartcl}
+\usepackage{da1}
+\usepackage[nogin]{Sweave}
+\usepackage{pdfpages}
+\usepackage[T1]{fontenc}
+\usepackage{natbib}
+\usepackage{subfigure}
+\usepackage[titletoc]{appendix}
+\usepackage{wrapfig}
+\usepackage{lipsum}
+\usepackage{picinpar}
+\usepackage{makeidx}
+\usepackage{blindtext}   
+\makeindex 
+
+\newcommand{\pkg}[1]{\textbf{#1}}
+\newcommand{\proglang}[1]{\textsf{#1}}
+\def\tucne#1{\mbox{\mathversion{bold}$#1$}}
+\newcommand{\m}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\boma}[1]{\mbox{\boldmath ${#1}$}}
+\newcommand{\sdcMicro}{\texttt{sdcMicro}}
+\newcommand{\sdcMicroGUI}{\texttt{sdcMicroGUI}}
+
+\title{
+	\vspace{1cm}
+ 	{\Large \textbf{IHSN GUI Tutorial %for \R-packages 
+    for \sdcMicroGUI \ } \\ (and
+ 	 \sdcMicro) }}
+	\author{Matthias Templ, Bernhard Meindl and Alexander Kowarik}
+	\date{Vienna, \today
+	\vspace{2cm}\\
+	\href{http://www.data-analysis.at}{http://www.data-analysis.at} \\
+	\vspace{2cm}
+	Acknowledgement: International Household Survey Network (IHSN) and PARIS21/OECD
+	\vspace{9cm}
+	}
+\pagestyle{fancy}           
+\begin{document}
+
+\newgeometry{top=20mm, bottom=20mm}
+
+\maketitle
+
+\newpage
+
+\section{An Overview of \sdcMicroGUI} \label{appC}
+The \sdcMicroGUI~\citep{sdcMicroGUI} serves as an easy-to-handle tool for users
+who want to use the \texttt{sdcMicro} package for statistical disclosure control but are not familiar with the native \R \ command line interface. It is possible for the user in \sdcMicroGUI \ to interact with microdata in an interactive way. The software performs automated recalculation and display of frequency counts, individual and global risk-measures, information loss and data utility after any anonymization step. Changes to risk and utility measures of the original data are also conveniently displayed in the GUI (graphical user interface). Furthermore, the code of every anonymization step carried out within the GUI is saved in a script which can easily be exported, modified and re-used. The software helps to reproduce any results.
+
+In this guidelines, the concept of \sdcMicroGUI \ and its possibilities are presented. The \sdcMicroGUI \ package is an highly interactive tool which takes into account the following aspects:
+\begin{description}
+  \item[Link to \sdcMicro:] The GUI makes use of the functionality of the
+  \sdcMicro~\citep{sdcMicro} package. Thus, it allows high-performance and fast
+  computations since all basic operations are written in either \texttt{C} or \texttt{C++}.
+  \item[Import/Export:] Data sets exported from other statistical software such as \texttt{SAS}, \texttt{SPSS}, \texttt{Stata}  can easily be imported. Furthermore it is possible to use \texttt{.csv}-files as well as data stored in \texttt{R} binary format. An interactive preview and interactive selection of import parameters (such as delimiters or seperators) is provided for the import of \texttt{.csv} files. This allows users to correctly read the data into the GUI. Export facilities are provided to the same formats from which data can be read into the GUI.
+  \item[Usability:] The package is an easy to use tool for anonymisation of microdata, all methods are easily accessible.
+ 	\item[Recoding:] Facilities to rename and regroup categories and to change values of a variable are included.
+  \item[Interactivity:] Risk und utility measures are automatically estimated whenever user apply a disclosure limitation technique. The corresponding numbers are instantly shown in the corresponding parts of the GUI. Users immediately sees the effect of any action. In addition, the risk and utility of the original unmodified data are displayed, which guides somehow the user on the effectiviness of the anonymisations 
+  \item[Undo Button:] Users can undo the last step done in the GUI. This is a very useful feature since the undo-feature makes it possible to try out methods with different parameters, get instant feedback and go back and forth until the result is satisfying. Currently it is possible to go back exactly one step in the history.
+  \item[Report:] Directly from the user interface it is possible to produce
+  automatically generated, standardized reports in various output formats. The
+  report can be exported to \texttt{html}, \texttt{latex} or plain
+  \texttt{text}-files. Users can select to generate two different type of
+  reports. The more detailed (internal) version includes the anonymisation
+  methods applied but also estimates of risk and utility are reported depending
+  on the methods used (different output for different methods). The shorter
+  (external) version returns a brief summary on the anonymisation procedure that
+  have been applied. This output is also suitable for external viewers. In this
+  report-type, detailed comparisons and summaries are suppressed and are not
+  included in the report. For more information, see Section~\ref{sec:reports}.           
+  \item[Reproducibility:] \sdcMicroGUI \ offers the possibility to save, load or edit scripts for later re-use. Within the GUI, each step of the anonymization procedure is recorded and stored in a script. The script includes valid \texttt{R}-expressions that can be copied into \texttt{R}. Thus, any anonymisation procedure can be reproduced either simple by loading a script into the GUI or by pasting the script directly into an \texttt{R}-console.
+\end{description}  
+
+\subsection{Key Elements of the Graphical User Interface}\label{overview:gui}
+\subsubsection*{The main menu}
+In Figure~\ref{fig:step1} parts of \sdcMicroGUI \ are shown. Specifically, in Figure \ref{fig:data} the top-menu is shown while in Figure \ref{fig:import} the import mask for \textit{.csv}-files is shown. We now continue to describe the elements of the main menu that is located at the top of the GUI and that is always visible.
+
+\begin{itemize}
+	\item \textbf{GUI}: this menu-item allows to close or restart the interface as well as to check for possible updates of \sdcMicro \ and/or \sdcMicroGUI.
+	\item \textbf{Data}: in this menu it is possible to import data (from various data formats) as well as existing \R-objects into the GUI. It is also possible to export data (also to different data formats) and generate a report from here.
+	\item \textbf{Script}: the script menu item allows to save, load or view a script that was generated by \sdcMicroGUI.
+	\item \textbf{Help}: the help-section gives access to different resources such as information on possible disclosure control methods or the documentation of the underlying functions from package \sdcMicro.
+	\item \textbf{Undo}: The button $\longrightarrow$ \textit{Undo} menu entry allows to go back one step in the anonymisation process. It is possible to try out an anonymisation method and if the results are not satisfying this last action can be reverted easily.
+\end{itemize}
+
+
+\subsubsection*{The main window of the GUI}\label{cont:tabs}
+The GUI generally displays three tabs, see also Figures \ref{fig:tab1}, \ref{fig:tab2} and \ref{fig:tab3}.
+\begin{description}
+%\paragraph{Identifiers:} 
+\item[Identifiers] Shows a summary of the current selection of key
+% variables after a data set was imported. For each categorical key variable the number of categories is shown. For each numerical key variable three statistics (minimum, median and maximum) are displayed. If any auxiliary variables such as sampling weight, household-id or a strata variable has been selected, summary statistics are shown for these variables as well.
+
+In this view, direct identifiers can be removed by clicking on the corresponding button. In this tab it is also possible to reset the current choice of key-variables, see also Figure~\ref{fig:tab1}).
+%\paragraph{Categorical:} 
+\item[Categorical:] This tab is divided into three parts. On the left hand
+% side on the top information about disclosure risk based on frequency counts is shown. Here, the number (and percentages) of observations violating 2 and 3-anonymity is displayed. To see the actual observations that are violating 3-anonymity users can click on the corresponding button. Below, additional risk-measures are displayed. The number of observations having a much bigger risk than the main part of the observations (using robust measures) is presented as well as the expected number of reidentifications (which is defined as the sum over all individual risks) for both the original and the modified micro data. Also the expected number of reidentifications based on a hierarchical risk-measure exploiting household-information is calculated and shown. Furthermore it is possible to view the observations with highest individual risks by clicking on the relevant button and to calculate the l-diversity measure for some variables by clicking on the button at the bottom.
+In the middle part, the methods that can be used for the the anonymisation of categorical key variables (Recoding, PRAM, local suppression) are displayed and can be selected and applied as shown in Figure~\ref{fig:tab2}.
+On the right hand side some important measures on information loss are shown. At the top, information about recoding (number of categories, mean size and number of observations in the smallest category) for all key-variables (for both original and modified) are listed. At the bottom of the right hand side, the number of suppressions within each key-variable is printed.
+%\paragraph{Continuous:} 
+\item[Continuous:] The third tab is also divided into three parts. On the
+% left hand side, a risk measure that calculates the percentage of masked data points that are too close to the original data values is shown.
+In the middle part, the methods (microaggregation, adding noise, shuffling) that can be used to anonymize continuous key variables are shown and can be selected and applied. 
+On the right hand side two measures of information loss (IL1 and differences in eigenvalues) are printed. \\
+\end{description}
+
+All frames and views in the GUI for presenting summaries, names, frequency calculations, suppressions, disclosure risk and data utility are filled in with actual values as soon as data are selected. Moreover, buttons to apply certain methods like recoding, PRAM or local suppression get clickable when data are loaded into the GUI. As soon as a method is applied on the data, all related views and measures are updated with current values. For example, after applying global recoding, the disclosure risk and data utility for categorical key variables are updated and show the current values automatically.
+
+\subsection{Installation and Updates}\label{sec:installation}
+The recommended procedure to install the software consists of the following steps:
+\paragraph*{Install \proglang{R}:} If you already have \R~installed, make sure that you are using the current version. If the software is not installed on your computer, go to \href{http://cran.r-project.org/bin/}{http://cran.r-project.org/bin/} and choose your platform. For Windows, just download the executable file and follow the on-screen instructions when installing the software.
+\paragraph*{Install sdcMicro and sdcMicroGUI:} Open \proglang{R} on your computer and type:
+\begin{lstlisting}
+install.packages("sdcMicroGUI")
+\end{lstlisting}
+The installation is only necessary once. We note that the graphical user interface depends on GTK+ to draw windows. When installing \sdcMicroGUI \ all dependencies (including GTK+) are automatically installed if the user has sufficient system administration rights.
+
+%In case your internet connection goes through a proxy server, see
+%Section~\ref{proxy}.
+
+%Note that the development version is placed and developed on \proglang{github}.
+%It can be installed by
+%\begin{lstlisting}
+%install.packages("devtools")
+%require(devtools)
+%install_github("github link xxxxxxxxxxxxxxx", user="alexkowa")
+%\end{lstlisting}  
+%  \lstinline{install.packages(c('sdcMicro','sdcMicroGUI'))}. This will
+%  install the latest versions of both packages from the comprehensive
+%  % \proglang{R}-archive network (CRAN).
+%  \item[(3) Open the GUI:] Type \lstinline{require(sdcMicroGUI); sdcGUI()} into
+%  \proglang{R}
+%\end{description}
+
+%If \proglang{R} is already installed you can start with (2), if \proglang{R} and
+%the packages are already installed you should start with (3). \\
+
+\paragraph{Update:}
+Typing \lstinline{update.packages()} into \proglang{R} searches for possible updates and installs new versions of packages if any are available. Using \sdcMicroGUI \ it is also possible to check for an updated version by clicking on the menu-item \textit{GUI} $\rightarrow$ \textit{Check for Updates} which should be done regularly. \\
+
+If your organisation use a proxy server to connect to the internet, automatic access of \proglang{R} is usually restricted. However, a simple trick gives you the necessary internet connection from within \proglang{R}. In case you have a proxy server just type 
+\begin{lstlisting}
+setInternet2(TRUE)
+\end{lstlisting}
+into the \proglang{R}-Console. Afterwards you are able to install packages.
+
+%\subsubsection{The Installation for Dummies and Permanent \proglang{R} Deniers}
+
+%If one would not like to touch \proglang{R} in any case, then an own environment
+%can be installed. We hereby provide and \texttt{.exe} file that automatically
+%installs all necessary things (for Windows user only). A desktop icon is created
+%with an prepared version of \proglang{R} that contains all necessary software
+%and where the GUI automatically starts when clicking on this desktop icon.
+%The \texttt{.exe} is not available over the internet but on request only. We
+%recommend to just download/update the software
+%regularely at the comprehensive \proglang{R}-archive network (CRAN) instead of
+%installing it with the \texttt{.exe}. This guarantees to work with the latest
+%version of the software.
+
+\section{Open the GUI}
+Open the software \proglang{R} and type: 
+\begin{lstlisting}
+require(sdcMicroGUI); sdcGUI()
+\end{lstlisting}
+
+This will load the \sdcMicroGUI \ package into \proglang{R} and calls the point an click graphical user interface. If you have not installed \sdcMicroGUI, you will see an error message and should follow the steps to install the package as described in Section~\ref{sec:installation}.
+
+\subsection{Step 2: Select, Load or Import Data}
+The GUI provides several possibilities to get data into the system, 
+see Figure~\ref{fig:data}. Data that is already available in the workspace of
+\proglang{R} can be simply be selected by using the menu entry \textit{Data
+$\rightarrow$ Choose R-Dataset}. Using \textit{Data $\rightarrow$ Import} (see
+again Figure~\ref{fig:data}) it is possible to import data in various formats
+like native \textit{RData}-files as well as import/export files from other
+statistical software products such as \textit{SPSS}, \textit{SAS} and \textit{STATA}.
+
+\begin{figure}
+\subfigure[The \textit{data}-menu entry at the main
+menu.]{
+\includegraphics[width=0.45\textwidth]{imgs/gui_import_menu.png}\label{fig:data}}\hfill
+\subfigure[On-the-fly preview of \texttt{.csv} files.]{
+\includegraphics[width=0.5\textwidth]{imgs/gui_import_csv.png}\label{fig:import}}
+\caption{\label{fig:step1}\textit{Data} menu entry and the on-the-fly preview when importing .csv-files.}
+\end{figure}
+
+Very important is the advanced functionality which is available to import text-delimited \textit{.csv} files, see Figure~\ref{fig:import}. In this case, the user is presented with a data preview window (see again Figure~\ref{fig:import}) that shows the first rows of a data set with the current data import parameters and several clickable checkboxes to change import options such as:
+\begin{itemize}
+	\item \textit{header}: does the the first line of a data set contain column names 
+	\item \textit{fill}: if checked, blanks are added for rows with unequal length 
+	\item \textit{strip white}: allows the stripping of leading and trailing white space from unquoted character fields
+	\item \textit{strings as factors}: if checked, character vectors are converted to factors
+	\item \textit{blank line skip}: if checked, blank lines are ignored when reading the file
+\end{itemize}
+Additionally, the seperator between values, the decimal operator, quotes, skip and the coding of missing values (NA-strings) can be specified. As soon the user changes a field, the preview-window of the data changes according to the options and informs the user if the data get correctly imported. Note that also the type of each variable can be specified 
+(\textit{numeric} or \textit{factor}\footnote{In \R \ data type \textit{numeric}
+belongs to continuous variables while data type \textit{factor} belongs to categorical
+variables with given levels}) when importing a \textit{.csv}-File using the
+button $\longrightarrow$ \textit{Adjust Types} as shown at the bottom in Figure~\ref{fig:import}.
+
+%As soon data have been loaded or selected, an information about the data 
+%(``\textit{Loaded data set}'') 
+%is given (Figure~\ref{fig:data} - right). 
+
+\section{Selecting Key Variables}
+After a data set was selected or imported, a new window - the variable selection
+frame - pops up and the buttons $\longrightarrow$ \textit{Select key variables /
+Reset} and $\longrightarrow$ \textit{Remove direct identifiers} in the first tab
+of the GUI interface become active. An important part in the anonymisation of
+data is the variable selection, see Figure~\ref{gui:var}. Statistical methods
+and the corresponding functions in \R \ are in most cases specific in terms of
+the scale of variables. Some functions should only be applied to categorical (in
+\R \ these variables correspond to vectors of class \textit{factor}) variables
+while some are suitable for continous (in \R \ they are vectors of type
+\textit{numeric}) variables only. \\            
+
+\begin{wrapfigure}{R}{0.5\textwidth}\centering
+\vspace{-0.5cm}
+\includegraphics[scale=0.45]{imgs/gui_generate_strata.png}
+\caption{\label{gui:strata}Defining strata window.}
+\end{wrapfigure}
+In any case, only \textbf{categorical} and \textbf{continuous key variables}
+should be selected in this frame because any other categorical or continuous
+variables of the data set do not be contribute in any aspect to the
+anonymisation process. Only for shuffling, all variables are alaways made
+selectable (as predictors), independently of this choice. \\        
+%\newpage
+
+%\begin{wrapfigure}{r}{0.5\textwidth}
+%\vspace{-0cm}
+%\begin{center}
+%\includegraphics[width=0.4\textwidth]{imgs/GUI-step2-variables}
+%\includegraphics[width=0.4\textwidth]{imgs/gui_variable_selection.png}
+%\end{center}
+%\vspace{-20pt} 
+%\caption{\label{gui:var}The variable selection frame of the GUI.}
+%\vspace{20pt}
+%\end{wrapfigure}
+
+%\noindent 
+%In any case, only the \textbf{categorical} and \textbf{continuous key variables} should be selected as categorical and continuous variables in this frame, and not any other categorical or continuous variables of the data set, since they do not be contribute to any aspect in the anonymisation process. Note, that for shuffling, all variables are anyway made selectable (as predictors), independent of this choice.
+
+%\begin{wrapfigure}{l}{0.4\textwidth}
+%\begin{center}
+%\vspace{-20pt} 
+%\includegraphics[width=0.3\textwidth, height=0.4\textwidth]{imgs/strata}
+%\end{center}
+%\vspace{-20pt} 
+%\caption{\label{gui:strata}Defining the strata through the variable selection window.}
+%\vspace{-10pt}
+%\end{wrapfigure}
+
+Some functions can also be applied on \textbf{domain level}. In this case, it is
+required to specify or create a variable defining population subgroups. To
+create a new strata variable (for example a combination of several categorical
+variables), the strata selection window can be used. This window can be accessed
+by clicking on the button $\longrightarrow$ \textit{Generate Strata Variable} in
+the variable selection window, see Figure~\ref{gui:strata}. 
+
+
+Also information on \textbf{clustering} (for example households) are often
+required to be specified and can be taken into account by using the variable
+selection window. Furthermore it might also be important to select a
+\textbf{weight vector}, especially if the microdata have been collected from a
+complex survey. This kind of information has to be provided by the user,
+otherwise the system can not make use of this knowledge. Note, that most of the
+variable selection options are optional. For example, users are not forced to
+select any continuous (in the GUI: \textit{numerical}) variables if they are not
+present in the data.          
+
+
+\begin{wrapfigure}{l}{0.5\textwidth}\centering
+\vspace{-0.5cm}
+\includegraphics[scale=0.6]{imgs/gui_variable_selection.png}
+\caption{\label{gui:var}The variable selection frame of the GUI.}
+\end{wrapfigure}
+
+
+As mentioned before, it is often necessary to generate a new stratification
+variable that is a combination of a few categorical variables. This can be done
+by clicking the button $\longrightarrow$ \textit{Generate Strata Variable}, see
+Figure~\ref{gui:var}. A window pops up where users can specify the variables
+that should be used for the stratification of the data, see
+Figure~\ref{gui:strata}. In the case that variables have the wrong scale (for
+example if categorical key variables are saved as type \textit{numeric}), the
+global recoding frame automatically pops up. In the global recoding window it is
+then possible recode the corresponding variables.          
+
+\color{white}
+\blindtext  
+\color{black}
+
+\vspace{-3cm}
+
+\section{Anonymisation of Categorical Key Variables}
+\subsection{Recoding}
+Clicking on the button \textit{Recode} in the tab \textit{Categorical} of the main window opens a window in which the categorical key variables can be recoded, as it is shown in Figure~\ref{gui:recode}.
+
+\begin{figure}[ht]
+\centering
+\subfigure[Original distribution of \textit{age} (continuous).]{
+\includegraphics[width=0.45\textwidth]{imgs/gui_age_original.png}\label{fig:r1}}
+\subfigure[Variable \textit{age} recoded into age groups and converted to a factor.]{
+\includegraphics[width=0.45\textwidth]{imgs/gui_age_recoded.png} \label{fig:r2}}
+\subfigure[Frequency counts and individual risks of all combinations of categorical key variables.]{
+\includegraphics[width=0.45\textwidth]{imgs/gui_frequencies}
+\label{fig:r3}}
+\subfigure[help file for global recoding.]{
+\includegraphics[width=0.45\textwidth]{imgs/gui_help_recode.png}
+\label{fig:r4}}
+\caption[]{%
+\label{gui:recode}The global recoding interface. All key variables can be recoded.}
+\end{figure}
+
+It is possible to recode all categorical key variables separately. 
+The corresponding variable names are visible in the menu of the key variables
+configuration frame. Any variable can now be converted, recoded, grouped and
+renamed. For converting continuous scaled variables into classes, breaks and
+label names can be specified. It is also possible to group categories of factors
+into broader categories (using the button $\longrightarrow$ \textit{Group
+selected level}) and also rename specific categories by clicking on button
+$\longrightarrow$ \textit{Rename selected level} after having selected a factor
+level. The distribution of the variables is always shown graphically as well as
+information on the tabulated variable. Additionally, the frequency counts of all
+key variables are available and visible in a separate tab.
+
+%In this example, we chose \textit{water}, which is of type \textit{numeric} in the original data. We converted this variable to a categorical variable - a so called \textit{factor} in \proglang{R} - and already combine two categories with low frequency into broader categories (1 and 2 $\rightarrow$ 1-2; 6 and 7 $\rightarrow$ 6-7). Renaming and joining categories together were done using the \textit{rename} and \textit{group} window (see the corresponding button in Figure~\ref{gui:recode}). The frame showing the distribution of water (shown in the right upper graphic in Figure~\ref{gui:recode}) updates automatically as soon as any recoding is carried out. \\
+
+%\noindent {\Large \textbf{\textit{Note 1: Information on Tabs}}}
+
+%\textit{Note that after the variables are selected all information are updated in the GUI. }
+\begin{figure}[ht]
+\centering
+\subfigure[View of Tab "Identifiers"]{
+\includegraphics[width=0.45\textwidth]{imgs/gui_tab1.png}
+\label{fig:tab1}}
+\subfigure[View on Tab "Categorical"]{
+\includegraphics[width=0.45\textwidth]{imgs/gui_tab2.png}
+\label{fig:tab2}}
+\subfigure[View on Tab "Continuous"]{
+\includegraphics[width=0.45\textwidth]{imgs/gui_tab3.png}
+\label{fig:tab3}}
+\caption[]{\label{gui:tabs}Showing the three main tabs of the GUI. Information on the content was already given in \ref{cont:tabs}.}
+\end{figure}
+
+Figure~\ref{fig:tab1} shows the the graphical user interface after the necessary
+variables have been selected and optionally recoded. As it has already been
+mentioned, the user interface consists of three main parts which are organised
+in tabs and have already been described in Section \ref{overview:gui}.     
+
+%Basic information about the selected variables are given as well as to reselect variables or to delete direct identifiers. 
+
+%The logical order of the other two tabs (Categorical and Continuous) - the one for 
+%categorical key variables is shown in Figure~\ref{fig:tab2} - 
+%are the following: on the left hand side ($\sim$ the first column in the tab)
+%information on the disclosure risk is given, in the middle 
+%area ($~$ the second column) anonymisation methods are selectable, and in the right hand side
+%of the tab ($\sim$ the third column) information of information loss is given.}
+
+\subsection{Frequency Counts and Disclosure Risk}
+Sample- and population frequencies ($f_k$ and $F_k$, respectively) are visualized when tab $\longrightarrow$ \textit{Frequencies}) in the global recoding menu is clicked. But not only the frequencies but also 
+the individual risks \citep{Fra04} and the values of the categorical key
+variables are printed. 
+The table containing these statistics is interactive and sortable. This means
+that for example clicking on the top of column \textit{risk} sorts the table
+according to the values of the individual risks in ascending order. Clicking a
+second time will sort the table by this variable in descending order.
+
+In tab $\longrightarrow$ \textit{Mosaic Plot} of the global recoding menu the mosaic plots of all selected key-variables is shown. The plot as well as the frequency counts and risks are updated automatically whenever any action that modifies key-variables is applied. Similar information is available in the second tab (\textit{Categorical}) of the \sdcMicroGUI \ main window, see Figure~\ref{fig:tab2}. Additionally, all observations violating 3-anonymity are directly accessible. These observations are shown if the user clicks on the the button $\longrightarrow$ \textit{View Observations violating 3-anonymity}. In order to compare the impact of anonymisation methods already applied, the same information calculated with the original, unmodified data is also displayed.
+
+Observations having high individual risks can be viewed by clicking
+the button $\longrightarrow$ \textit{View Observations with high risk}.
+Information on how many observations are expected to be re-identified under the
+given selection of key-variables is displayed as well as information on the
+number of observations with considerable higher risk than the main part of all
+observations is shown.
+
+Last but not least, the $l$-diversity measure \citep{Machanava07} can be
+calculated. By clicking on the corresponding button a new window pops up in which the user can select
+sensitive variables and set the $l$-recursive constant (see
+Figure~\ref{fig:div1}). As soon as the button $\longrightarrow$ \textit{OK} in
+this window is clicked, another window containing the results pops up.
+
+On the right hand side (see Figure~\ref{fig:tab2}) information about the effect
+of recoding in key-variables are printed. Also, the number and percentages of
+suppressions for each categorical key variable is shown. The information about
+the frequencies, $k$-anonymity \citep{Sweeney02} and individual risks is always
+updated whenever a method is applied to categorical key variables. 
+Thus, users get an impression
+how the recodings infect the frequency counts and individual risks.        
+
+\begin{figure}[ht]
+\centering
+\subfigure[$l$-Diversity.]{
+\includegraphics[width=0.25\textwidth]{imgs/gui_ldiversity.png}
+\label{fig:div1}
+}
+\subfigure[Post randomization method (PRAM).]{
+\includegraphics[width=0.35\textwidth]{imgs/gui_pram.png}
+\label{fig:pram}
+} 
+\caption[]{%
+\label{gui:pram}$l$-diversity and PRAM.}
+\end{figure}
+
+As shown in Figure~\ref{fig:tab2} methods for anonymisation of categorical key
+variables can be selected clicking on corresponding buttons in the main window
+of the graphical user interface. This includes the already discussed global
+recoding facilities, PRAM \citep{Gouweleeuw98} and two different methods to
+perform local suppression.     
+
+If method PRAM - the post randomisation method that swaps categories randomly
+with predefined probabilites - is selected, a new window pops up. In this window
+the user has to select variables that should be pramed (see
+Figure~\ref{fig:pram}). Moreover, a variable for stratification can also be
+selected. In this case, PRAM is applied on each strata independently.       
+
+\subsection{Local Suppression}
+Often it is the case that even after recoding key-variables, some combinations of characteristics of these variables still violate $k$-anonymity or that some observations still have relatively high individual disclosure risks. However, it might be the case that further recoding is not possible because either the data utility would be too low. At this stage, local suppression can be applied. Two methods are available in \sdcMicroGUI. The first one applies local suppression in an optimal manner with the aim to reach $k$-anonymity.% (the button \includegraphics[width=4cm]{imgs/GUI-step3-button2}).     
+
+Figure~\ref{fig:l1} shows the window that is opened if the user wants to perform
+optimal local suppression after clicking on button $\longrightarrow$
+\textit{Local suppression (optimal - k-anonymity)}. In this window the user can
+choose the importance of variables for the local suppression algorithm. This
+means, that the higher the rank (importance) of a variable is, the higher is the
+probability that required suppression are applied to this variable. The
+probabilities to get suppressions are lower for variables with lower ranks.
+\sdcMicroGUI \ automatically suggests an optimal order of the importance as it
+is shown in Figure~\ref{fig:l1}.          
+
+\begin{figure}[ht]
+\centering
+\subfigure[Optimal local suppression based on $k$-anonymity.]{
+\includegraphics[width=0.30\textwidth]{imgs/gui_localsupp_opt.png}
+\label{fig:l1}} 
+\subfigure[Local suppression based on risk threshold.]{
+\includegraphics[width=0.30\textwidth]{imgs/gui_localsupp_threshold.png}
+\label{fig:l2}}
+\caption[]{%
+\label{gui:localSupp2}Optimal and individual local suppression.}
+\end{figure}
+
+By adjusting a slider, the user may also change the parameter $k$ for
+$k$-anonymity, which is typically 3 or 4. After the procedure has finished, the
+resulting number of combinations of the key variables violating $k$-anonymity
+(which is zero most of the time) is automatically updated and printed in the top
+left of this tab together with the updated number of (new) suppressions.       
+
+Another option is to apply local suppression can be also to specific variable
+only by clicking on the button $\longrightarrow$ \textit{Local Suppression
+(threshold - indiv.risk)}. In this case, risky observations can be specified
+interactively using a slider as it is shown see Figure~\ref{fig:l2}. After
+setting a threshold of individual risks, all values of a variable (that has to
+be specified by the user) are suppressed if the current individual risk of this
+observation is higher than the selected threshold value.        
+
+\section{Anonymisation of Continuous Key Variables}
+On the second tab $\longrightarrow$ \textit{Continous} of the main window,
+sdc-methods for continous variables can be applied and risk-measures and
+measures of information loss are displayed as it was already discussed in
+section \ref{overview:gui}. After applying any disclosure limitation techique,
+the disclosure risks and the data utility measures are automatically
+re-calculated and updated values are printed in this tab. Thus, users get an
+impression on both, how the continuous scaled key variables are preserved and
+how large the disclosure risk remains. The following methods can be selected in
+this window:          
+
+\subsection{Microaggregation}
+By clicking on button $\longrightarrow$ \textit{Microaggregation}, a new window
+pops up as it is shown in Figure~\ref{gui:ma}. In this window the user
+has to select an aggregation level by moving a slider, select a microaggregation method
+using a drop-down box and select at least one numeric key variable. Optionally,
+it is also possible to apply microaggregation to subsets of the data separately.
+If this option is wanted, the user has to select an additional strata-variable
+that define the partition of the data set. In this window also a help tab is
+available in which more information about possible methods and parameters is
+available.         
+
+\begin{figure}[ht!]
+\centering
+\subfigure[Window to specify parameters and options for microaggregation of continuous variables.]{
+\includegraphics[width=0.30\textwidth]{imgs/gui_microaggregation.png}
+\label{gui:ma}} \hspace{0.5cm}
+\subfigure[Specifying options for shuffling method.]{
+\includegraphics[width=0.29\textwidth]{imgs/gui_shuffling.png}
+\label{fig:s1}}
+\caption[]{\label{gui:mash}The microaggregation and the shuffling window.}
+\end{figure}
+
+
+\subsection{Adding (Correlated) Noise}
+The user can add stochastic noise to numerical key-variables by clicking on
+button $\longrightarrow$ \textit{Add Noise}. In This case, a new window pops up
+in which the user has to specify if he wants to add additive or correlated noise
+\citep{Brand04} by selecting the appropriate method using a drop-down menu. The
+user also has to specify the desired amount of noise 
+(in percentage) and select at least one
+numeric key-variable. If the user clicks on the button $\longrightarrow$
+\textit{OK}, the selected method is applied to the chosen variable(s). It is
+however always possible (as it is in all windows of the graphical user
+interface) to cancel the current operation by clicking on button
+$\longrightarrow$ \textit{Cancel}. As in the pop-up window for microaggregation,
+also in this window a help-tab is available providing additional information.              
+
+\subsection{Shuffling}
+Shuffling \citep{Muh06} can be selected to anonymize continuous key-variables by
+clicking on button $\longrightarrow$ \textit{Shuffling}. Various methods are
+available but method \textit{ds} \citep{Muh06} is selected by default. After
+clicking on the button, a new window opens automatically. In this window the
+user can select the method for shuffling, the regression method and the
+covariance method using drop-down menus. Afterwards, variables have to be
+selected as response- and predictor variables. In the implementation of
+\sdcMicroGUI, all variables selected for acting as predictors are used without
+any interactions between them. Any complex formula can be applied using the
+shuffling function from \sdcMicro. Please also note, that all variables can
+serve as predictors which means that this selection is not limited to previously
+selected key variables. As in the other pop-up windows, additional help is
+provided in the help-tab, see Figure~\ref{fig:s1}.              
+
+%\begin{figure}[ht]
+%\centering
+%\includegraphics[width=0.2\textwidth]{imgs/gui_shuffling.png}
+%\caption[]{%
+%\label{fig:s1}Specifying options for shuffling method.}
+%\end{figure}
+
+%\subsection{Additional Functionality and the Expert Mode}
+%\index{sdcMicroGUI!expert mode}
+
+%\begin{figure}[ht]
+% \centering
+% \subfigure[Writing commands into R within the GUI.]{
+%  \includegraphics[width=0.45\textwidth]{imgs/sdcGUI_expert2}
+%   \label{fig:c1}
+%   }
+% \subfigure[The output after submitting the command.]{
+%  \includegraphics[width=0.45\textwidth]{imgs/sdcGUI_expert3}
+%   \label{fig:c2}
+%   }
+% \caption[]{%
+%   \label{gui:expert}The expert mode. Here the whole functionality of \R \ can be used.}
+%\end{figure}
+
+%Figure~\ref{fig:s3} shows the expert mode that is accessible after clicking the corresponding button
+%in the main frame of the GUI.
+%In the figure simple a manual valid R-expression is put into the expert mode.
+%After submitting this expression, Figure~\ref{fig:s4} shows the result.
+%
+%However, to use the \textit{Experts only} mode, the user needs at least basic \R \ knowledge to
+%be able to work with it. This functionality was implemented because
+%experienced users may want to have additional flexibility as the standard
+%\R \ command-line interface version provides. The concept of the \sdcMicroGUI \ 
+%is that all variables which are needed to operate are stored in a separate
+%environment so that the global \R \ environment stays ``clean''. 
+%Assuming an experienced user works with the GUI and wants to manipulate 
+%the dataset by hand he would have to export the dataset to the global environment,
+% modify it there and open it again to continue to work with it in the GUI. Basically, that 
+%would work, but the actions done while using the CLI version of R will not
+%get recorded, so the output would not be reproducible. 
+%This problem is solved by the \texttt{Expert only} frame (see Figure
+%\ref{fig:s3}).
+%
+%By opening the expert mode a new environment is created and the
+%\texttt{activeDataSet} is made available in there under the shortcut
+%\texttt{ads}. A simple input line and an output box equivalent
+%to the standard \R \ command line interface is provided.\\ 
+%Every user's command is evaluated and sent to \R \ for processing and the output is captured. 
+%The dataset in the \texttt{sdcGUIenv} environment is not changed 
+%because it is changed in the code window environment and the executed command is stored 
+%in a separate list, until the \texttt{Save} button of the window is pressed. Whenever 
+%this happens, the modified dataset in the code window environment is stored
+%in the \texttt{sdcGUIenv} environment and the saved commands copied to the
+%\textit{script}  \citep[for further details, see][]{Templ09tdp}.
+%\index{sdcMicroGUI!active data set}
+
+\section{Exporting Results}
+\subsection{Export anonymised data-sets}
+Using \textit{Data $\rightarrow$ Export} in the main-menu on the top, it is
+possible to export the anonymized data-set into various formats. By clicking on
+the appropriate menu-entry the data can be exported as plain-text \texttt{.csv}
+files as well as in formats that can be read by other statistical software such
+as \texttt{SAS}, \texttt{SPSS} or \texttt{Stata}. In addition, the data set can
+be saved directly to the \proglang{R} workspace or using the \proglang{R} binary
+format.        
+
+\subsection{Reports} \label{sec:reports}
+Selecting \textit{Data $\rightarrow$ Generate Report} in the top menu opens a
+new pop window from which two different kind of reports can be produced by
+selecting the corresponding radio button. Also it is possible to select the
+output format. The reports can be saved as html-, pdf- or plain-text files. A
+sample output is shown in Figure \ref{gui:report}.         
+
+\paragraph{Internal Report:} includes information about the performed actions,
+the disclosure risk and measures of information loss and a session info on the
+software versions used. This detailled report is suitable for the organisation
+that holds the data for internal information and documentation of the
+anonymisation procedure.     
+\paragraph{Report for Externals:} this report includes less information. For
+example all information on disclosure risks, information loss is suppressed.
+This report is therefore suitable for external users of the anonymised data.       
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[width=0.75\textwidth]{imgs/GUI-step5-report2}
+\caption{\label{gui:report}A screenshot of the first page of the automatic generated SDC-report.}
+\end{center}
+\end{figure}
+
+The first page of the internal report is shown in Figure~\ref{gui:report}. Information on the selected variables, the anonymisation methods applied as well as the disclosure risk is given at the first page. Detailed analysis on risk and utility follows in the report. The information that is included in the report always depends on the anonymisation process. For example, if PRAM was not applied, no specific summary for pramed variables is available. However, if PRAM has been used, the entire disclosure risk summary part is presented in differently.
+
+\subsection{The Script: Reproducibility of Results Obtained with the GUI}
+\label{C:script} \sdcMicroGUI \ provides reproducibility of any result obtained by clicking and setting parameters interactivly. This is one of the major features of the software because every action the user performed is internally stored, saved and listed and can be looked at in the \textit{script frame}. To access this window, one needs to select \textit{Script $\rightarrow$ View} on the main menu. 
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[width=0.55\textwidth]{imgs/gui_view_script.png}
+\caption{\label{gui:script}The view script window showing the anonymization history}.
+\end{center}
+\end{figure}
+
+
+%\begin{wrapfigure}{l}{0.58\textwidth}
+%\begin{center}
+%\vspace{-20pt} 
+%\includegraphics[width=0.55\textwidth]{imgs/GUI-step5-script}
+%\end{center}
+%\vspace{-20pt} 
+%\caption{\label{gui:script}The view script window accessed with the menu of the GUI (\textit{Script $\rightarrow$ View})}.
+%\vspace{-10pt}
+%\end{wrapfigure}
+
+But it is not only possible to view the current script, but users can also export (\textit{Script $\rightarrow$ Export}) and import (\textit{Script $\rightarrow$ Import}) scripts from \sdcMicroGUI. Therefore, it is easily possible to reproduce previosly produced output. It is even suitable to modify some steps or alter the output. User can also remove specific steps from the script when navigating through it or execute only steps up to a certain point. This feature is very helpful to reproduce any results after some time, to be able to continue a previously started work and to restart some steps of the anonymization quickly.
+
+%Note that reproducibility is also important to share scripts within an organization or between organisations. It is also very helpful to reproduce any results after some time, or just continue a started work the next day or to restart some steps of the anonymization very quickly.
+
+%Note that this facility is usually not available in graphical user interfaces.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Working with the sdcMicro Package} \label{sdcMicroPackage}
+For each method explained we additionally show it's usage in software also  via command line using the \sdcMicro \ package. Therefore, a small introduction to the package is given before the implemented methods are explained. \\
+
+\subsection{General Information about \sdcMicro}
+In the last years, the statistical software environment \texttt{R} \citep{RDev} (for short: \texttt{R}) gets more and more popular. Nowadays \texttt{R} has more users than any other statistical software\footnote{See, for example, \href{http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html}{http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html}, where \texttt{R} entered the top 20 of all programming software in January 2012. \texttt{SAS} is ranked on place 32.}, and \texttt{R} has got the standard \index{R} statistical software for data analysis and graphics. For statisticians it has become the major programming language in its field. \\
+
+The first version, version 1.0.0 of the \sdcMicro \ package was realeased in
+2007 on the comprehensive \R \ archive network (CRAN,
+\href{http://cran.r-project.org}{http://cran.r-project.org}). The current
+release, version 4.0.4, is a huge step forward.
+Almost all methods are implemented in a highly object-oriented manner (using S4
+classes) and they have been written internally in \texttt{C} or call call
+\texttt{C++} code which allows for high-performance computations. The
+International Household Survey Network (IHSN) provided \texttt{C++} code for
+many methods which was partly integrated into \sdcMicro \ and were partly
+rewritten.      
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[ht]
+\centering
+\subfigure[Frequency estimation and risk measurement.]{
+\includegraphics[width=0.46\textwidth]{imgs/compTime1b}
+\label{compTime1}} \hspace{0.2cm}
+\subfigure[Local suppression without Argus (functionality is not available)]{
+\includegraphics[width=0.46\textwidth]{imgs/compTime2b}
+\label{compTime2}}
+\caption[]{\label{compTime}Computation time of IHSN C++ code, $\mu$-Argus and
+sdcMicro (version 4.0.4).\textcolor{red}{TODO: include computation time of old
+sdcMicro and mu-Argus!}}
+\end{figure}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%Integrating IHSN \texttt{C++} code into \texttt{R} have several benefits, 
+%some of which are listed below:
+%\begin{itemize}
+%  \item code written by IHSN can be used within a free and open-source 
+%  statistical software environment.
+%  \item these methods are provided within the most popular statistical software
+%  \item the integration of \texttt{C++} code allows fast computations in \texttt{R}.
+%  \item \texttt{sdcMicro} is a collection of microdata protection methods and
+%  thereby easily called.
+%\end{itemize}
+After installing and starting \R, the index of methods that are available  in
+the package \sdcMicro \ can be called by using the \lstinline{help} function as
+shown in Listing~\ref{listinghelp}. The package description shows a summary
+information about the package, see also Listing~\ref{listinghelpPa}.      
+\begin{lstlisting}[frame=single, label={listinghelpPa}, caption={Accessing the index file to list the available methods in \sdcMicro.}] 
+packageDescription("sdcMicro") 
+\end{lstlisting}
+
+%<<echo=FALSE>>=
+%packageDescription("sdcMicro") 
+%@
+
+%To look for the index of available methods one can type \lstinline{help(package=sdcMicro)} into \R .
+
+\subsection{Getting Help}
+For each of the methods that has been implemented in \sdcMicro, a help file is available. The help files not only describe all possible parameters that can be changed but that also feature simple, working examples that can directly be copied into \R. The help file for a given function can be accessed by calling an \R-function with a \texttt{?} directly before the function name. An example is given in Listing~\ref{listinghelp}. 
+
+\begin{lstlisting}[frame=single, label={listinghelp}, caption={Accessing the index of methods and the help file for function 'microaggregation' of \sdcMicro.}] 
+help(package=sdcMicro)  # index of methods
+?microaggregation       # same as help("microaggregation")
+\end{lstlisting}
+
+\sdcMicro \ features so called vignettes. These are manuals that are available in pdf-format. These vignettes contain interesting information, for example always the current version of these guidelines. Listing Listing~\ref{listing:vignette} shows how to browse the available vignettes of \sdcMicro.
+%Such vignettes give a good overview of the capabilities 
+%of the software package. The vignettes contained in \R \ package \sdcMicro \ can 
+%be opened using the code listed in Listing~\ref{listing:vignette}. 
+%\textcolor{red}{
+%The first vignette contains an earlier report about 
+%\sdcMicro. 
+%Another vignette gives some information about the integration of the IHSN \proglang{C++} code in \sdcMicro \ %where also some testing of methods in terms of computational speed is integrated.
+
+\begin{lstlisting}[frame=single, label=listing:vignette, caption={Listing available vignettes of package \sdcMicro.}] 
+vignette(package="sdcMicro")
+\end{lstlisting}
+
+\subsection{S4 Class Structure}
+The \sdcMicro \ package supports both, the straighforward application of methods to data and the application of methods to a so called \textit{sdcMicroObj}. For example, when applying microaggregation on three continuous key variables on the data set \lstinline{testdata}, the command \lstinline{microaggregation(testdata[,c("expend","income","savings")])} is equivalent to \lstinline{microaggregation(sdc)} if \lstinline{sdc} has been properly defined as an object of class \textit{sdcMicroObj}.
+
+To start with, the \sdcMicro \ package has to be loaded once in \proglang{R} as it is shown in Listing~\ref{list:load}. This is however only possible, if the package was already installed on the computer. Installation instructions have already been given in section \ref{sec:installation}.
+\begin{lstlisting}[frame=single, label=list:load, caption={Loading the sdcMicro package}] 
+require(sdcMiro)
+\end{lstlisting}
+
+To define an object of class \textit{sdcMicroObj}, the function \lstinline{createSdcObj()} can to be used. In this case, all required parameters have to be specified. The neccessary parameters are for example categorical and continuous key variables, the vector of sampling weights and optionally stratification and cluster ID's. Listing~\ref{list:create} shows how to generate such an object using the test data that are included in library \sdcMicro.. 
+\begin{lstlisting}[frame=single, label=list:create, caption={Defining a sdcMicroObj.}] 
+load(testdata)
+sdc <- createSdcObj(testdata, 
+ keyVars=c('urbrur','roof','walls','water','electcon','sex'), 
+ numVars=c('expend','income','savings'), 
+ w='sampling_weight', hhId='ori_hid')
+\end{lstlisting}
+
+We showed how to define the categorical and continous key variables, the vector of weights and the household IDs. The following slots of the \textit{sdcMicroObj} \lstinline{sdc} are pre-filled
+\begin{Schunk}
+\begin{Sinput}
+> slotNames(sdc)
+\end{Sinput}
+\begin{Soutput}
+ [1] "origData"          "keyVars"           "pramVars"         
+ [4] "numVars"           "weightVar"         "hhId"             
+ [7] "strataVar"         "sensibleVar"       "manipKeyVars"     
+[10] "manipPramVars"     "manipNumVars"      "manipStrataVar"   
+[13] "originalRisk"      "risk"              "utility"          
+[16] "pram"              "localSuppression"  "options"          
+[19] "additionalResults" "set"               "prev"             
+\end{Soutput}
+\end{Schunk}
+The first slot contains the original data, the second slot the index of categorical key variables, and so on (for details, type \lstinline{help("createSdcObj")} into \proglang{R}).
+
+Every method is then applied on the \textit{sdcMicroObj} and all related
+computations are done automatically.
+For example, the individual risks are re-estimated whenever a protection method
+is applied. Then the corresponding slots are updated. In addition, the system knows which methods can be applied to which variables. When applying a method that is suitable for categorical variables, the system already knows that and the user does not have to specify the variables again.
+
+The application of a method to an \textit{sdcMicroObj} is done by
+\begin{center}
+\texttt{method(sdcMicroObj)} \quad , 
+\end{center}
+whereas \texttt{method} is a placeholder
+for any method available in \sdcMicro . Listing~\ref{list:ma} shows an example for this
+object-oriented implementation approach. In this example, the
+method microaggregation is applied on an object of class
+\lstinline{sdcMicroObj}.
+Since microaggregation is only suitable for continuous scaled variables, the categorical variables remain untouched. Microaggregation is applied on all continuous key variables. Additionally, the risk and utility slots are updated and then contain the new estimates using current values of the microaggregated variables. In this example, default values for parameters are used, It is however possible, to change the default values. For details, see \lstinline{help("microaggregation")}.
+
+\begin{lstlisting}[frame=single, label=list:ma, caption={Applying a method on an object of class sdcMicroObj.}] 
+sdc <- microaggregation(sdc)
+\end{lstlisting}
+%
+The slots of the \textit{sdcMicroObj} can be accessed also using function \lstinline{get.sdcMicroObj()}, as it is shown in Listing~\ref{list:access}.
+\begin{lstlisting}[frame=single, label=list:access, caption={Accessor to extract information from a sdcMicroObj.}] 
+get.sdcMicroObj(sdc, "utility") ## access utility
+get.sdcMicroObj(sdc, "keyVars") ## access cat. key variables
+\end{lstlisting}
+
+Print methods are available to show the relevant information - see
+Listing~\ref{print} for printing the risk and the following result.
+
+\begin{lstlisting}[frame=single, label=risk, caption={One - of many - print methods.}] 
+print(sdc, "risk")
+\end{lstlisting}
+\begin{Schunk}
+\begin{Soutput}
+--------------------------
+0 obs. with higher risk than the main part
+Expected no. of re-identifications:
+ 4.33 [ 4.65 %]
+--------------------------
+--------------------------
+Hierarchical risk 
+--------------------------
+Expected no. of re-identifications:
+ 5.92 [ 6.37 %]  
+\end{Soutput}
+\end{Schunk}
+
+More information on \sdcMicro \ and its facilities can be found in the manual of
+\sdcMicro , see \cite{sdcMicro}.
+
+\section*{References}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
