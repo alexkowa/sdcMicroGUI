@@ -3,6 +3,7 @@
 \usepackage{da1}
 \usepackage[nogin]{Sweave}
 \usepackage{pdfpages}
+\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{natbib}
 \usepackage{subfigure}
@@ -12,6 +13,7 @@
 \usepackage{picinpar}
 \usepackage{makeidx}
 \usepackage{blindtext}   
+\usepackage[english]{babel}
 \makeindex 
 
 \newcommand{\pkg}[1]{\textbf{#1}}
