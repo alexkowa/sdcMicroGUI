@@ -2613,8 +2613,8 @@ writeVars <- function(t1,t2,t3,t4,t5){
   }
   
   ## Menubar Functions
-  vign <- function(...) print(vignette("gWidgets"))
-  vign2 <- function(...) print(vignette("sdcMicroPaper"))
+  vign <- function(...) print(vignette("gui_tutorial"))
+  vign2 <- function(...) print(vignette("guidelines"))
   paind <- function(...)print(help(package="sdcMicro"))
   
   
@@ -3883,7 +3883,8 @@ writeVars <- function(t1,t2,t3,t4,t5){
   mbar$Script$"Export"$handler = saveScript
   mbar$Script$"View"$handler = viewScript
 #  mbar$Script$"Run"$handler = runScript
-  mbar$Help$"GUI-Guidelines"$handler = vign
+  mbar$Help$"GUI-Tutorial"$handler = vign
+  mbar$Help$"SDC Guidelines"$handler = vign2
   mbar$Help$"R sdcMicro Help Files"$"Risk (categorical)"$handler=function(...)helpR("measure_risk")
   mbar$Help$"R sdcMicro Help Files"$"Global Recode"$handler=function(...)helpR("globalRecode")
   mbar$Help$"R sdcMicro Help Files"$"Pram"$handler=function(...)helpR("pram_strata")
@@ -3894,7 +3895,6 @@ writeVars <- function(t1,t2,t3,t4,t5){
   mbar$Help$"R sdcMicro Help Files"$"Add Noise"$handler=function(...)helpR("addNoise")
   mbar$Help$"R sdcMicro Help Files"$"Shuffling"$handler=function(...)helpR("shuffle")
   mbar$Help$"R sdcMicro Help Files"$"Data Utility (continuous)"$handler=function(...)helpR("dUtility")
-  mbar$Help$"R sdcMicro Index"$handler = paind
   mbar$Undo$"Undo last action"$handler=OneStepBack
   
   
