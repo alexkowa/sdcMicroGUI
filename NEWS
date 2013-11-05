@@ -1,3 +1,8 @@
+# 1.1.0
+ - New layout: formated headlines
+ - New GUI Tutorial as vignette
+ - 'Undo last' - Button in Recode Window
+ - New Report facility integrated in the GUI
 # 1.0.3
  - Seed in Script
  - view pram output, warning if a key variable is prammed 
