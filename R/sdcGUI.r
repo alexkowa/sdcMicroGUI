@@ -1452,7 +1452,11 @@ sdcGUI <- function() {
       }
     }
     showLevels <- function(h, ...) {
+#      cat("showLevels - ")
+#      print(h)
+#      cat(" - \n")
       if(existd("facTab")){
+#        cat("done\n")
         facTab <- getd("facTab")
         i <- which(ActiveSdcVarsStr()==h)
         x <- facTab[[i]]
@@ -1606,6 +1610,7 @@ sdcGUI <- function() {
                       svalue(rb[[index]]) <- "Factor"
                       unblockHandler(rb[[index]])
                       updateSummary(name)
+                      showLevels(name)
                       }
                       }',sep="")))
       recButton2[[i]] <- gbutton("Recode to factor", container=tmpRecFac, handler=recFactorFun[[i]])
