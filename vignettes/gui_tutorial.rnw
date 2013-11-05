@@ -646,7 +646,7 @@ In the last years, the statistical software environment \texttt{R} \citep{RDev} 
 The first version, version 1.0.0 of the \sdcMicro \ package was realeased in
 2007 on the comprehensive \R \ archive network (CRAN,
 \href{http://cran.r-project.org}{http://cran.r-project.org}). The current
-release, version \Sexpr{packageVersion("sdcMicro")}, is a huge step forward.
+release, version 4.1.0, is a huge step forward.
 Almost all methods are implemented in a highly object-oriented manner (using S4
 classes) and they have been written internally in \texttt{C} or call
 \texttt{C++} code which allows for high-performance computations. The
@@ -743,15 +743,22 @@ sdc <- createSdcObj(testdata,
  w='sampling_weight', hhId='ori_hid')
 \end{lstlisting}
 
-<<echo=FALSE>>=
-require(sdcMicro)
-sdc <- createSdcObj(testdata2, keyVars=c('urbrur','roof','walls','water','electcon','sex'), 
-	numVars=c('expend','income','savings'), w='sampling_weight', hhId='ori_hid')
-@
 We showed how to define the categorical and continous key variables, the vector of weights and the household IDs. The following slots of the \textit{sdcMicroObj} \lstinline{sdc} are pre-filled
-<<echo=TRUE>>=
-slotNames(sdc)
-@
+\begin{Schunk}
+\begin{Sinput}
+> slotNames(sdc)
+\end{Sinput}
+\begin{Soutput}
+ [1] "origData"          "keyVars"           "pramVars"         
+ [4] "numVars"           "weightVar"         "hhId"             
+ [7] "strataVar"         "sensibleVar"       "manipKeyVars"     
+[10] "manipPramVars"     "manipNumVars"      "manipStrataVar"   
+[13] "originalRisk"      "risk"              "utility"          
+[16] "pram"              "localSuppression"  "options"          
+[19] "additionalResults" "set"               "prev"             
+[22] "deletedVars"      
+\end{Soutput}
+\end{Schunk}
 The first slot contains the original data, the second slot the index of categorical key variables, and so on (for details, type \lstinline{help("createSdcObj")} into \proglang{R}).
 
 Every method is then applied on the \textit{sdcMicroObj} and all related
@@ -786,9 +793,20 @@ Listing~\ref{print} for printing the risk and the following result.
 \begin{lstlisting}[frame=single, label=risk, caption={One - of many - print methods.}] 
 print(sdc, "risk")
 \end{lstlisting}
-<<echo=FALSE>>=
-print(sdc, "risk")	
-@
+\begin{Schunk}
+\begin{Soutput}
+--------------------------
+0 obs. with higher risk than the main part
+Expected no. of re-identifications:
+ 4.33 [ 4.65 %]
+--------------------------
+--------------------------
+Hierarchical risk 
+--------------------------
+Expected no. of re-identifications:
+ 5.92 [ 6.37 %]  
+\end{Soutput}
+\end{Schunk}
 
 More information on \sdcMicro \ and its facilities can be found in the manual of
 \sdcMicro , see \cite{sdcMicro}.
@@ -796,7 +814,6 @@ More information on \sdcMicro \ and its facilities can be found in the manual of
 \section*{References}
 
 \bibliographystyle{plainnat}
-\bibliography{../references}
+\bibliography{references}
 
 \end{document}
-
