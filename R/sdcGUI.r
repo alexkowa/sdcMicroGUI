@@ -56,7 +56,7 @@ sdcGUI <- function() {
     ## thanks to Josef L for this
     help.txt <- "" ## keep R CMD check happy  
     help.con <- textConnection("help.txt", "w", local = TRUE)
-    tools::Rd2txt(utils:::.getHelpFile(out), out=help.con, package=pkgname,
+    Rd2txt(.getHelpFile_sdcMicroGUI(out), out=help.con, package=pkgname,
         width=80L)
     close(help.con)
     

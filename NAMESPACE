@@ -1,3 +1,4 @@
+importFrom("tools","Rd2txt")
 import(vcd, foreign, Hmisc)
 export(plot.indivRisk,sdcGUI,sdcGUIoutput)
 import(cairoDevice, gWidgetsRGtk2,sdcMicro)
