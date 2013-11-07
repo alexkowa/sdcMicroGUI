@@ -11,7 +11,8 @@
 \usepackage{lipsum}
 \usepackage{picinpar}
 \usepackage{makeidx}
-\usepackage{blindtext}   
+\usepackage{blindtext}
+\usepackage[english]{babel}
 \makeindex 
 
 \newcommand{\pkg}[1]{\textbf{#1}}
