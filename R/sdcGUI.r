@@ -2313,6 +2313,7 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
     #	numVars <- c(numVars, names(xtmp)[i])
     #}
     varTab = gtable(data.frame(vars=nsVars, stringsAsFactors=FALSE), multiple=TRUE)
+    putd("varTab_selVar",varTab)
     size(varTab) <- c(120,400)
     add(mtmp, varTab)
     
@@ -2380,9 +2381,8 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
     addSpring(selVar_windowButtonGroup)
     b1 <- gbutton("Generate Strata Variable", container=selVar_windowButtonGroup, handler=function(h,...) {
           #confirmSelection_tmp(catTab[], numTab[], wTab[],hTab[],sTab[])
-          confirmSelection_tmp(catTab[], numTab[], wTab[],hTab[],sTab[])    
-          dispose(selVar_window)
-          stVar_window = gwindow("Generate a strata variable", width=230, parent=window)
+          #confirmSelection_tmp(catTab[], numTab[], wTab[],hTab[],sTab[])    
+          stVar_window = gwindow("Generate a strata variable", width=230, parent=selVar_window)
           stVar_windowGroup = ggroup(container=stVar_window, horizontal=FALSE)
           stVar_main = ggroup(container=stVar_windowGroup)
           mtmp = ggroup(container=stVar_main)
@@ -2421,10 +2421,12 @@ svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
                 else{
                   name <- paste(paste(sVars,collapse="_"),"_stratavar",sep="")
                   t1 <- paste("c(",paste("\"",sVars,"\"",sep="",collapse=","),")",sep="")
-                  Script.add(paste("generateStrata_tmp(", t1, ", \"",name,"\")",sep=""))
+                  Script.add(paste("activedataset <- generateStrata(activedataset,", t1, ", \"",name,"\")",sep=""))
                   generateStrata_tmp(sVars,name)
                   dispose(stVar_window)
-                  selVar()
+                  varTab_selVar=getd("varTab_selVar")
+                  varTab_selVar[,] <- c(varTab_selVar[,],name)
+                  
                 }
                 
               })
@@ -3651,6 +3653,10 @@ writeVars <- function(t1,t2,t3,t4,t5){
             if ( svalue(repType, index=TRUE) == 1 ) {
                internal <- TRUE
             }
+            cat("---\n")
+            print(outdir)
+            print(filename)
+            cat("---\n")
             report(
               obj, 
               outdir=outdir,
