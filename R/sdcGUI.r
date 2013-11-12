@@ -3580,15 +3580,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
     if(existd("sdcObject")){
       reportDialog <- gwindow("Generate Report", parent=window, width=400, height=300)
       reportDialogG <- ggroup(container=reportDialog, horizontal=FALSE)
-      #pramRadio <- gcheckbox("Pram", checked=TRUE)
-      #kAnonRadio <- gcheckbox("k-Anonymity", checked=TRUE)
-      #indivRiskRadio <- gcheckbox("Individual Risk", checked=TRUE)
-      #hierRiskRadio <- gcheckbox("Hierachical Risk", checked=TRUE)
-      #riskNumKeyVarsRadio <- gcheckbox("Risk of Numerical Key Variables", checked=TRUE)
-      #dataUtilityRadio <- gcheckbox("Data Utility", checked=TRUE)
-      #localSuppsRadio <- gcheckbox("Local Supression", checked=TRUE)
-      #dataUtilityContRadio <- gcheckbox("Data Utility Cont", checked=TRUE)
-      #sessionInfoRadio <- gcheckbox("R Session Info", checked=TRUE)
+
       repTitle <- gedit(width=100)
       repType <- gradio(c("internal (detailled) report","external (overview) report"), horizontal=TRUE)
       svalue(repTitle) <- "SDC-Report"
@@ -3596,18 +3588,9 @@ writeVars <- function(t1,t2,t3,t4,t5){
       add(reportDialogTitleFrame,repTitle)
       reportDialogFrame <- gframe("Report Type:", container=reportDialogG, horizontal=FALSE)
       add(reportDialogFrame,repType)
-      #add(reportDialogFrame,pramRadio)
-      #add(reportDialogFrame,kAnonRadio)
-      #add(reportDialogFrame,indivRiskRadio)
-      #add(reportDialogFrame,hierRiskRadio)
-      #add(reportDialogFrame,riskNumKeyVarsRadio)
-      #add(reportDialogFrame,dataUtilityRadio)
-      #add(reportDialogFrame,localSuppsRadio)
-      #add(reportDialogFrame,dataUtilityContRadio)
-      #add(reportDialogFrame,sessionInfoRadio)
+
       reportDialogOutFrame <- gframe("Output Type:", container=reportDialogG, horizontal=FALSE)
-      outputRadio <- gradio(c("HTML", "LATEX", "TEXT"), 
-          horizontal=TRUE, container=reportDialogOutFrame)
+      outputRadio <- gradio(c("HTML", "LATEX", "TEXT"), horizontal=TRUE, container=reportDialogOutFrame)
       okbutton <- gbutton("OK", container=reportDialogG, handler=function(h,...){
             obj <- ActiveSdcObject()
             obj@options$cmd <- getd("activeScript")$cmd
@@ -3626,27 +3609,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
             }
             outdir <- dirname(exportFileName)
             filename <- strsplit(basename(exportFileName),"\\.")[[1]][1]
-            if(svalue(outputRadio)=="LATEX") {
-              filename <- paste(filename,".tex",sep="")
-            }
-            if (svalue(outputRadio)=="HTML") {
-              filename <- paste(filename,".html",sep="")
-            }
-            if (svalue(outputRadio)=="TEXT") {
-              filename <- paste(filename,".txt",sep="")
-            }
 
-            #report(obj
-            #  pram=svalue(pramRadio),
-            #  kAnon=svalue(kAnonRadio),
-            #  indivRisk=svalue(indivRiskRadio),
-            #  hierRisk=svalue(hierRiskRadio),
-            #  riskNumKeyVars=svalue(riskNumKeyVarsRadio),
-            #  dataUtility=svalue(dataUtilityRadio),
-            #  localSupps=svalue(localSuppsRadio),
-            #  dataUtilityCont=svalue(dataUtilityContRadio),
-            #  sessionInfo=svalue(sessionInfoRadio),outdir=outdir,filename=filename,title=svalue(repTitle),
-            #  format=svalue(outputRadio))
             internal <- FALSE
             if ( svalue(repType, index=TRUE) == 1 ) {
                internal <- TRUE
@@ -3660,9 +3623,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
               internal=internal
             )
             dispose(reportDialog)
-          })
-      
-      
+          })      
     }else{
       gmessage("No sdc object found to generate report.", title="Information", icon="warning", parent=window)
     }
