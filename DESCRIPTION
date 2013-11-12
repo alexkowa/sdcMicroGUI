@@ -1,7 +1,7 @@
 Package: sdcMicroGUI
 Type: Package
 Title: Graphical user interface for package sdcMicro
-Version: 1.1.1
+Version: 1.1.2
 Date: 2013-11-07
 Author: Alexander Kowarik, Matthias Templ, Bernhard Meindl, Francois Fonteneau
 Maintainer: Matthias Templ <matthias.templ@gmail.com>
@@ -10,7 +10,7 @@ Description: A point and click graphical user interface based on top of the
     interface provides full reproducibility of any result via the script menu
     in the GUI.
 Depends:
-    sdcMicro (>= 4.1.0),
+    sdcMicro (>= 4.1.1),
     gWidgetsRGtk2,
     tcltk,
     cairoDevice
