@@ -417,15 +417,15 @@ sdcGUI <- function() {
     glabel("... script running ...", container=xprogress)
     if(length(strata_var)>0){
       strata_var <- parseVarStr(strata_var)
-      Script.add(paste("sdcObject <- pram_strata(sdcObject,variables=", 
+      Script.add(paste("sdcObject <- pram(sdcObject,variables=", 
               parseVarStr(var),",strata_variables=",strata_var, 
               "",")", sep="")) 
-      ActiveSdcObject(pram_strata(ActiveSdcObject(),variables=var,strata_variables=strata_var))
+      ActiveSdcObject(pram(ActiveSdcObject(),variables=var,strata_variables=strata_var))
     }else{
       strata_var <- parseVarStr(strata_var)
-      Script.add(paste("sdcObject <- pram_strata(sdcObject,variables=", 
+      Script.add(paste("sdcObject <- pram(sdcObject,variables=", 
               parseVarStr(var),"",")", sep="")) 
-      ActiveSdcObject(pram_strata(ActiveSdcObject(),variables=var))
+      ActiveSdcObject(pram(ActiveSdcObject(),variables=var))
     } 
     freqCalcIndivRisk()
     dispose(xprogress)
@@ -1997,7 +1997,7 @@ sdcGUI <- function() {
     p1_windowGroup = ggroup(container=nb, horizontal=FALSE,label="Function")
     #Help
     t <- gtext(container=nb, label="Help ", expand=TRUE)
-    l <- .findHelpPage("pram_strata", "sdcMicro")
+    l <- .findHelpPage("pram", "sdcMicro")
     x <- l$x
     .insertHelpPage(t, x)
     svalue(nb) <- 1
@@ -2075,7 +2075,7 @@ calculations are not valid anymore. Are you sure you want to pursue with this ac
           } 
         })
     gbutton("Cancel ", container=p1_windowButtonGroup, handler=function(h,...) { dispose(p1_window) })
-    gbutton("Help ", container=p1_windowButtonGroup, handler=function(h,...) { helpR("pram_strata") })
+    gbutton("Help ", container=p1_windowButtonGroup, handler=function(h,...) { helpR("pram") })
   }  
   viewpram1 <- function(...){
     p1_window = gwindow("Pram", width=230, parent=window)
@@ -2084,7 +2084,7 @@ calculations are not valid anymore. Are you sure you want to pursue with this ac
     p1_windowGroup = ggroup(container=nb, horizontal=FALSE,label="Function")
     #Help
     t <- gtext(container=nb, label="Help ", expand=TRUE)
-    l <- .findHelpPage("pram_strata", "sdcMicro")
+    l <- .findHelpPage("pram", "sdcMicro")
     x <- l$x
     .insertHelpPage(t, x)
     svalue(nb) <- 1
@@ -2098,7 +2098,7 @@ calculations are not valid anymore. Are you sure you want to pursue with this ac
     
     
     gbutton("Close", container=p1_windowGroup, handler=function(h,...) { dispose(p1_window) })
-    gbutton("Help ", container=p1_windowGroup, handler=function(h,...) { helpR("pram_strata") })
+    gbutton("Help ", container=p1_windowGroup, handler=function(h,...) { helpR("pram") })
   }
   # function for gr_button2
   # opens script window to execute R commands directly
@@ -3853,7 +3853,7 @@ writeVars <- function(t1,t2,t3,t4,t5){
   mbar$Help$"SDC Guidelines"$handler = vign2
   mbar$Help$"R sdcMicro Help Files"$"Risk (categorical)"$handler=function(...)helpR("measure_risk")
   mbar$Help$"R sdcMicro Help Files"$"Global Recode"$handler=function(...)helpR("globalRecode")
-  mbar$Help$"R sdcMicro Help Files"$"Pram"$handler=function(...)helpR("pram_strata")
+  mbar$Help$"R sdcMicro Help Files"$"Pram"$handler=function(...)helpR("pram")
   mbar$Help$"R sdcMicro Help Files"$"Local Supression (optimal - k-Anonymity)"$handler=function(...)helpR("localSuppression")
   mbar$Help$"R sdcMicro Help Files"$"Local Supression (threshold - indiv.risk)"$handler=function(...)helpR("localSupp")
   mbar$Help$"R sdcMicro Help Files"$"Risk (continuous)"$handler=function(...)helpR("dRisk")
