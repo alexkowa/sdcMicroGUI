@@ -230,12 +230,12 @@ sdcGUI <- function() {
     fk <-  m1$individual[,2]
     if(is.na(mu))
       mu <- quantile(rk,.9, na.rm=TRUE)
-    sd <- 1/length(rk) * (sum(fk[rk < mu] * rk[rk < mu]) + mu*sum(fk[rk>mu])) * 100
+#    sd <- 1/length(rk) * (sum(fk[rk < mu] * rk[rk < mu]) + mu*sum(fk[rk>mu])) * 100
     s2 <- length(which(rk > mu))
     mu.old <- mu
-    sd.old <- sd
+#    sd.old <- sd
     s2.old <- s2
-    maxsd <- 1/length(rk) * (sum(fk * rk)) *100
+#    maxsd <- 1/length(rk) * (sum(fk * rk)) *100
     knames <- ActiveSdcVarsStr()
     n1 <- knames[1]    ## next, the plot of column names of keys
     if( length(knames) > 1 ){
@@ -246,29 +246,29 @@ sdcGUI <- function() {
     norm.refresh <- function(...) {
       method = getd("method")
       mu <- as.numeric(evalq(svalue(smu)))
-      sd <- as.numeric(evalq(svalue(ssd)))
+#      sd <- as.numeric(evalq(svalue(ssd)))
       s2 <- as.numeric(evalq(svalue(ss2)))
       if (mu != mu.old) {
         s2 <- round(length(which(rk > mu)))
-        sd <- 1/length(rk) * (sum(fk[rk < mu] * rk[rk < mu]) + mu*sum(fk[rk>mu])) * 100
-        try(svalue(ssd)<-sd)
+#        sd <- 1/length(rk) * (sum(fk[rk < mu] * rk[rk < mu]) + mu*sum(fk[rk>mu])) * 100
+#        try(svalue(ssd)<-sd)
         try(svalue(ss2)<-s2)
-        sd.old <<- sd
+#        sd.old <<- sd
         s2.old <<- s2
       }
-      if (sd != sd.old) {
-        sd <- as.numeric(evalq(tclvalue(s2)))#, envir = slider.env))
-        s2 <- length(which(rk > mu))
-        try(svalue(ssd)<-sd)
-        try(svalue(ss2)<-s2)
-        sd.old <<- sd
-        s2.old <<- s2
-      }
+#      if (sd != sd.old) {
+#        sd <- as.numeric(evalq(tclvalue(s2)))#, envir = slider.env))
+#        s2 <- length(which(rk > mu))
+#        try(svalue(ssd)<-sd)
+#        try(svalue(ss2)<-s2)
+#        sd.old <<- sd
+#        s2.old <<- s2
+#      }
       if (s2 != s2.old) {
         s2 <- as.numeric(evalq(tclvalue(s2)))#, envir = slider.env))
-        sd <- 1/length(rk) * (sum(fk * rk) + 0.02*sum(fk))
-        try(svalue(ssd)<-sd)
-        sd.old <<- sd
+#        sd <- 1/length(rk) * (sum(fk * rk) + 0.02*sum(fk))
+#        try(svalue(ssd)<-sd)
+#        sd.old <<- sd
         s2.old <<- length(which(rk > mu))
       }
       if( method == "histogram" ){
@@ -302,12 +302,12 @@ sdcGUI <- function() {
     tostart <- round(max(rk)/0.001)*0.001+0.001
     smu = gslider(from=0, to=tostart, by=0.001, value=mustart, handler=norm.refresh)
     add(tmp, smu, expand=TRUE)
-    tmp = gframe('<span weight="bold" size="medium">Re-identification Rate</span>',
-        container=sliderGroup,markup=TRUE)
-    sdstart <- round(sd/0.01)*0.01
-    to2start=round(maxsd/0.01)*0.01+0.01
-    ssd = gslider(from=0, to=to2start, by=0.01, value=sdstart, handler=norm.refresh)
-    add(tmp, ssd, expand=TRUE)
+#    tmp = gframe('<span weight="bold" size="medium">Re-identification Rate</span>',
+#        container=sliderGroup,markup=TRUE)
+#    sdstart <- round(sd/0.01)*0.01
+#    to2start=round(maxsd/0.01)*0.01+0.01
+#    ssd = gslider(from=0, to=to2start, by=0.01, value=sdstart, handler=norm.refresh)
+#    add(tmp, ssd, expand=TRUE)
     tmp = gframe('<span weight="bold" size="medium">Unsafe Records</span>',
         container=sliderGroup,markup=TRUE)
     s2start <- round(s2)
