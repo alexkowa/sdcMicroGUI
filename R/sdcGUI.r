@@ -131,6 +131,7 @@ sdcGUI <- function() {
         dispose(xprogress)
         msg <- paste("Running the script was not possible due to the following error:\n",attributes(trycatch)$condition$message)
         gmessage(msg, title="Attention", icon="error", parent=window)
+        rmd(listd()) # cleans up the Environment
         stop(msg)
       }
       #xtmp <- function() { eval(parse(text=ytmp)) }
