@@ -115,32 +115,33 @@ sdcGUI <- function() {
   }
   
   Script.run <- function(xscr, ...) {
-    #if( existd("activeDataSet") ) {
-    if( TRUE ) {
-      if( missing(xscr) ) {
-        xcmd <- Script()
-        xcmd <- xcmd$cmd
-      } else {
-        xcmd <- xscr
-      }
-      xprogress = gwindow("please wait", width=180, height=40, parent=window)
-      glabel("... script running ...", container=xprogress)
-      activedataset <- ""
-      sdcObject <- ""
-      for( i in 1:length(xcmd) ) {
-        eval(parse(text=xcmd[i]))
-        #xtmp <- function() { eval(parse(text=ytmp)) }
-        #do.call(xtmp, list(), envir=sdcGUIenv)
-      }
-      putd("activeDataSet", activedataset)
-      putd("dataSetName", "activedataset")
-      ActiveSdcObject(sdcObject)
-      writeVars(ActiveSdcVarsStr("keyVars"),ActiveSdcVarsStr("numVars"), ActiveSdcVarsStr("weightVar"),
-          ActiveSdcVarsStr("hhId"),ActiveSdcVarsStr("strataVar"))
-      dispose(xprogress)
+    if( missing(xscr) ) {
+      xcmd <- Script()
+      xcmd <- xcmd$cmd
     } else {
-      gmessage("Run not possible, because no active data set found.", title="Attention", icon="error", parent=window)
+      xcmd <- xscr
     }
+    xprogress = gwindow("please wait", width=180, height=40, parent=window)
+    glabel("... script running ...", container=xprogress)
+    activedataset <- ""
+    sdcObject <- ""
+    for( i in 1:length(xcmd) ) {
+      trycatch <- try(eval(parse(text=xcmd[i])))
+      if(class(trycatch)=="try-error"){
+        dispose(xprogress)
+        msg <- paste("Running the script was not possible due to the following error:\n",attributes(trycatch)$condition$message)
+        gmessage(msg, title="Attention", icon="error", parent=window)
+        stop(msg)
+      }
+      #xtmp <- function() { eval(parse(text=ytmp)) }
+      #do.call(xtmp, list(), envir=sdcGUIenv)
+    }
+    putd("activeDataSet", activedataset)
+    putd("dataSetName", "activedataset")
+    ActiveSdcObject(sdcObject)
+    writeVars(ActiveSdcVarsStr("keyVars"),ActiveSdcVarsStr("numVars"), ActiveSdcVarsStr("weightVar"),
+        ActiveSdcVarsStr("hhId"),ActiveSdcVarsStr("strataVar"))
+    dispose(xprogress)
   }
   
   
