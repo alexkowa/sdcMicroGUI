@@ -1511,6 +1511,7 @@ sdcGUI <- function() {
     for(i in 1:length(keyname)){
       #Main
       tmp <- ggroup(horizontal=FALSE, container=nb,label=keyname[i],expand=FALSE)
+      svalue(nb) <- 1
       tmp1 <- gframe(text='<span weight="bold" size="medium">Type:</span>',
           horizonal=FALSE,container=tmp,markup=TRUE)
       #glabel("Type:",container=tmp)
@@ -1728,6 +1729,7 @@ sdcGUI <- function() {
     }
     #Frequencies Tab
     FreqTT <- ggroup(horizontal=FALSE, container=nb,label="Frequencies")
+    svalue(nb) <- 1
     FreqTT_1 <- gframe('<span weight="bold" size="medium">Information on observations violating 3-anonymity</span>',
         container=FreqTT,markup=TRUE)
     ffc_print = gtext(container=FreqTT_1,text="", width=900, height=150)
