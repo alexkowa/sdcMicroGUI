@@ -1352,18 +1352,24 @@ sdcGUI <- function() {
           #gr1_head <- getd("gr1_head")
           #gr1_summary <- getd("gr1_summary")
           SummaryTab <- getd("SummaryTab")
+          SummaryTabFrame <- getd("SummaryTabFrame")
           xtmp <- ActiveSdcObject()@manipKeyVars
           var <- xtmp[,v]
           if(isExtant(SummaryTab[[index]])){
             #svalue(gr1_head[[index]]) <- capture.output(print(head(var)),append=FALSE)
             Supdate <- t(as.data.frame(table(var)))
-            SummaryTab[[index]][,1:ncol(Supdate)] <- Supdate
-            if(ncol(SummaryTab[[index]][,])>ncol(Supdate)){
-              ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
-              SummaryTab[[index]][1,ind] <- rep("",length(ind))
-              SummaryTab[[index]][2,ind] <- rep("",length(ind))
-              names(SummaryTab[[index]])[ind] <- rep("I",length(ind ))
-            }
+            colnames(Supdate) <- paste("Cat",1:ncol(Supdate),sep="")
+            delete(SummaryTabFrame[[index]],SummaryTab[[index]])
+            SummaryTab[[index]] <- gtable(Supdate,container=SummaryTabFrame[[index]])
+            size(SummaryTab[[index]]) <- c(800,100)
+            putd("SummaryTab",SummaryTab)
+#            SummaryTab[[index]][,1:ncol(Supdate)] <- Supdate
+#            if(ncol(SummaryTab[[index]][,])>ncol(Supdate)){
+#              ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
+#              SummaryTab[[index]][1,ind] <- rep("",length(ind))
+#              SummaryTab[[index]][2,ind] <- rep("",length(ind))
+#              names(SummaryTab[[index]])[ind] <- rep("I",length(ind ))
+#            }
             #names(SummaryTab[[index]]) <- colnames(dd_summary)
             #svalue(gr1_summary[[index]]) <- capture.output(print(summary(var)),append=FALSE)
           }
@@ -1404,6 +1410,7 @@ sdcGUI <- function() {
           #gr1_head <- getd("gr1_head")
           #gr1_summary <- getd("gr1_summary")
           SummaryTab <- getd("SummaryTab")
+          SummaryTabFrame <- getd("SummaryTabFrame")
           xtmp <- ActiveSdcObject()@manipKeyVars
           for(index in indexAllKeys){
             v <- ActiveSdcVarsStr()[index]
@@ -1411,13 +1418,18 @@ sdcGUI <- function() {
             if(isExtant(SummaryTab[[index]])){
               #svalue(gr1_head[[index]]) <- capture.output(print(head(var)),append=FALSE)
               Supdate <- t(as.data.frame(table(var)))
-              SummaryTab[[index]][,1:ncol(Supdate)] <- Supdate
-              if(ncol(SummaryTab[[index]][,])>ncol(Supdate)){
-                ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
-                SummaryTab[[index]][1,ind] <- rep("",length(ind))
-                SummaryTab[[index]][2,ind] <- rep("",length(ind))
-                names(SummaryTab[[index]])[ind] <- rep("I",length(ind ))
-              }
+              colnames(Supdate) <- paste("Cat",1:ncol(Supdate),sep="")
+              delete(SummaryTabFrame[[index]],SummaryTab[[index]])
+              SummaryTab[[index]] <- gtable(Supdate,container=SummaryTabFrame[[index]])
+              size(SummaryTab[[index]]) <- c(800,100)
+              putd("SummaryTab",SummaryTab)
+#              SummaryTab[[index]][,1:ncol(Supdate)] <- Supdate
+#              if(ncol(SummaryTab[[index]][,])>ncol(Supdate)){
+#                ind <- (ncol(Supdate)+1):ncol(SummaryTab[[index]][,])
+#                SummaryTab[[index]][1,ind] <- rep("",length(ind))
+#                SummaryTab[[index]][2,ind] <- rep("",length(ind))
+#                names(SummaryTab[[index]])[ind] <- rep("I",length(ind ))
+#              }
               #names(SummaryTab[[index]]) <- colnames(dd_summary)
               #svalue(gr1_summary[[index]]) <- capture.output(print(summary(var)),append=FALSE)
             }
@@ -1507,7 +1519,7 @@ sdcGUI <- function() {
     xtmp <- ActiveSdcObject()@manipKeyVars
     groupFacVarFun <- renameFacVarFun <- gdev <- recFactorFun <- breaksInput <- labelsInput <- list()
     #facTab <- gr3_windowButton1 <- gr3_windowButton2 <- recButton2 <- rb <- gr1_head <- gr1_summary <- rbfun <- list()
-    facTab <- gr3_windowButton1 <- gr3_windowButton2 <- recButton2 <- rb <- SummaryTab <- rbfun <- list()
+    facTab <- gr3_windowButton1 <- gr3_windowButton2 <- recButton2 <- rb <- SummaryTab <- SummaryTabFrame <- rbfun <- list()
     for(i in 1:length(keyname)){
       #Main
       tmp <- ggroup(horizontal=FALSE, container=nb,label=keyname[i],expand=FALSE)
@@ -1537,7 +1549,7 @@ sdcGUI <- function() {
       
       #glabel("Head:",container=tmp)
       #gr1_head[[i]] <- gtext("", container=tmp, height=50, width=250)
-      tmp1 <- gframe(text='<span weight="bold" size="medium">Frequencies:</span>',
+      SummaryTabFrame[[i]] <- gframe(text='<span weight="bold" size="medium">Frequencies:</span>',
           horizonal=FALSE,container=tmp,markup=TRUE)
       #glabel("Frequencies:",container=tmp1)
       dd_summary <- t(as.data.frame(table(xtmp[,keyname[i]])))
@@ -1547,7 +1559,7 @@ sdcGUI <- function() {
       colnames(Supdate) <- paste("Cat",1:ncol(Supdate),sep="")
       SummaryTab[[i]] <- gtable(Supdate)
       size(SummaryTab[[i]]) <- c(800,100)
-      add(tmp1, SummaryTab[[i]])
+      add(SummaryTabFrame[[i]], SummaryTab[[i]])
       #putd("SummaryTab",SummaryTab[[i]])
       
       #gr1_summary[[i]] <- gtext("", container=tmp, height=50, width=250)
@@ -1707,6 +1719,7 @@ sdcGUI <- function() {
     #putd("gr1_head",gr1_head)
     #putd("gr1_summary",gr1_summary)
     putd("SummaryTab",SummaryTab)
+    putd("SummaryTabFrame",SummaryTabFrame)
     putd("gdev",gdev)
     
     #Insert Levels in List for Factor variables
