@@ -1731,6 +1731,7 @@ sdcGUI <- function() {
     
     ##Mosaic Plot
     t <- ggraphics(container=nb, label="Mosaic Plot")
+    svalue(nb) <- 1
     mosdev <- dev.cur()
     putd("mosdev",mosdev)
     varmoslist <- keyname[unlist(lapply(keyname,function(x)is.factor(xtmp[,x])))]
