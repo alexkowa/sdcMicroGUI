@@ -1519,7 +1519,7 @@ sdcGUI <- function() {
     xtmp <- ActiveSdcObject()@manipKeyVars
     groupFacVarFun <- renameFacVarFun <- gdev <- recFactorFun <- breaksInput <- labelsInput <- list()
     #facTab <- gr3_windowButton1 <- gr3_windowButton2 <- recButton2 <- rb <- gr1_head <- gr1_summary <- rbfun <- list()
-    facTab <- gr3_windowButton1 <- gr3_windowButton2 <- recButton2 <- rb <- SummaryTab <- SummaryTabFrame <- rbfun <- list()
+    facTab <- gr3_windowButton1 <- gr3_windowButton2 <- recButton2 <- rb <- GraphFrame <- SummaryTab <- SummaryTabFrame <- rbfun <- list()
     for(i in 1:length(keyname)){
       #Main
       tmp <- ggroup(horizontal=FALSE, container=nb,label=keyname[i],expand=FALSE)
@@ -1696,11 +1696,8 @@ sdcGUI <- function() {
       gr3_windowButtonGroup = ggroup(container=tmpGroupFac)
       addSpring(gr3_windowButtonGroup)
       #Graphics Fenser
-      tmpGraph <-  gframe('<span weight="bold" size="medium">Plot</span>',
+      GraphFrame[[i]] <-  gframe('<span weight="bold" size="medium">Plot</span>',
           container=tmp2, horizontal=FALSE,markup=TRUE)
-      ggraphics(container=tmpGraph,width=500,heigth=500)
-      gdev[[i]] <- dev.cur()
-      
       ##Main
       if(is.factor(xtmp[,keyname[i]])){
         svalue(rb[[i]]) <- "Factor"
@@ -1720,7 +1717,7 @@ sdcGUI <- function() {
     #putd("gr1_summary",gr1_summary)
     putd("SummaryTab",SummaryTab)
     putd("SummaryTabFrame",SummaryTabFrame)
-    putd("gdev",gdev)
+    
     
     #Insert Levels in List for Factor variables
     for(i in 1:length(keyname)){
@@ -1778,7 +1775,12 @@ sdcGUI <- function() {
     gbutton("Help ", container=okCancelGroup, handler=function(h,...) helpR("globalRecode") )
     
     #Plot ausfuehren
-    for(i in 1:length(keyname)){
+    for(i in length(keyname):1){
+      ggraphics(container=GraphFrame[[i]],width=500,heigth=500)
+      svalue(nb) <- i
+      gdev[[i]] <- dev.cur()
+    }
+    for(i in length(keyname):1){
       dev.set(gdev[[i]])
       var <- xtmp[,keyname[i]]
       if(is.factor(var)){
@@ -1787,6 +1789,8 @@ sdcGUI <- function() {
         try(hist(var,main=keyname[i],xlab="Levels",ylab="Frequency"),silent=TRUE)
       }
     }
+    putd("gdev",gdev)
+    svalue(nb) <- 1
   }
   
   removeDirectID_tmp <- function(var){
