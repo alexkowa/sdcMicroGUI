@@ -3647,10 +3647,6 @@ sdcGUI <- function() {
             if ( svalue(repType, index=TRUE) == 1 ) {
               internal <- TRUE
             }
-            cat("---\n")
-            print(outdir)
-            print(filename)
-            cat("---\n")
             report(
                 obj, 
                 outdir=outdir,
