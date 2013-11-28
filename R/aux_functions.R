@@ -223,7 +223,7 @@ printMeasure_riskComp <- function(obj){
   cat("--------------------------\n")
   s <- sum((risk$individual[,1] > median(risk$individual[,1])+2*mad(risk$individual[,1])) & (risk$indiviual[,1] > 0.1))
   sorig <- sum((originalRisk$individual[,1] > median(originalRisk$individual[,1])+2*mad(originalRisk$individual[,1])) & (originalRisk$indiviual[,1] > 0.1))
-  cat(paste(s," (orig:", sorig, ")","obs. with higher risk than the main part\n"))
+  cat(paste(s," (orig:", sorig, ")","obs. with higher risk than the benchmark\n"))
   cat("Expected no. of re-identifications:\n",round(risk$global$risk_ER,2),"")
   cat("[",round(risk$global$risk_pct,2),"%]  (orig:", round(originalRisk$global$risk_ER,2), 
       "[",round(originalRisk$global$risk_pct,2),"%])\n")
