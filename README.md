@@ -1,4 +1,4 @@
 sdcMicroGUI
 ===========
 
-Readme for R-Package sdcMicroGUI
+Readme for R-Package sdcMicroGUI.
