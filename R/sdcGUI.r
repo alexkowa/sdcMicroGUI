@@ -3054,7 +3054,7 @@ sdcGUI <- function() {
       }
       else{
         ip <- list(fill=TRUE,
-            header=TRUE,
+            header=FALSE,
             strip.white=TRUE,
             stringsAsFactors=TRUE,
             blank.lines.skip=TRUE, 
@@ -3068,7 +3068,7 @@ sdcGUI <- function() {
       
       statusbar <- gstatusbar("")
       csvfilebutton <- gbutton("...", handler=buttonHandler)
-      csvheader <- gcheckbox("header", checked=ip$header)
+      csvheader <- gcheckbox("row names", checked=ip$header)
       csvseperator <- gedit(ip$sep)
       csvdecimal <- gedit(ip$dec)
       csvnastrings <- gedit(ip$na.strings)
