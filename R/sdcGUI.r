@@ -103,7 +103,8 @@ sdcGUI <- function() {
   Script.new <- function(...) {
     xtmp <- list(cmd=c())
     putd("activeScript", xtmp)
-    cmd.seed <- paste("set.seed(",round(runif(1)*10e5),")")
+    cmd.seed <- paste(paste("set.seed(",round(runif(1)*10e5),")"),
+    paste("# sdcMicro:",packageVersion("sdcMicro"),", sdcMicroGUI",packageVersion("sdcMicroGUI")))
     eval(parse(text=cmd.seed))
     Script.add(cmd.seed)
   }
