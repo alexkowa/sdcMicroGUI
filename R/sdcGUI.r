@@ -2405,7 +2405,7 @@ sdcGUI <- function() {
     addSpring(btmp)
     gbutton(">>", container=btmp, handler=function(h,...) { ft(sTab, varTab, svalue(varTab), "sLen", 1) })
     gbutton("<<", container=btmp, handler=function(h,...) { ft(varTab, sTab, svalue(sTab), "sLen", 0) })
-    addSpring(btmp)
+    addSpring(btmp)    
     sTab = gtable(data.frame(vars=sVars, stringsAsFactors=FALSE), multiple=TRUE)
     size(sTab) <- c(120,100)
     add(tmp, sTab)
@@ -2450,7 +2450,7 @@ sdcGUI <- function() {
           gbutton("Ok", container=stVar_windowButtonGroup,
               handler=function(h,...) {
                 name <- "sdcMicroStrataVariable"
-                sVars <- sTab[]
+                sVars <- sTab[]                
                 if(length(sVars)==0)
                   gmessage("You have to select at least  one categoric variable to generate a strata variable.",
                       title="Information", icon="warning", parent=window)
@@ -2471,7 +2471,7 @@ sdcGUI <- function() {
         })
     tooltip(b1) <- tt_genstrat 
     gbutton("Ok", container=selVar_windowButtonGroup,
-        handler=function(h,...) {
+        handler=function(h,...) {          
           # check if firstrun - if not reset script and dataset to original one
           #cat(paste(getd("keyLen"), getd("numLen"), getd("wLen"), getd("hLen"), "\n"))
           fr_do <- TRUE
@@ -2497,7 +2497,8 @@ sdcGUI <- function() {
           # check if enough is selected
           if( fr_do ) {
             # min selection must be 1 in each category
-            if( ((getd("keyLen")>=1  || getd("numLen")>=1))&&getd("wLen")%in%c(0,1)&&getd("hLen")%in%c(0,1)) {
+            #if( ((getd("keyLen")>=1 || getd("numLen")>=1))&&getd("wLen")%in%c(0,1)&&getd("hLen")%in%c(0,1)) {
+            if( getd("keyLen")>=1 &&getd("wLen")%in%c(0,1)&&getd("hLen")%in%c(0,1) ) {
               keyVars <- catTab[]
               confirmSelection_tmp(catTab[], numTab[], wTab[],hTab[],sTab[])
               dispose(selVar_window)
@@ -2514,8 +2515,8 @@ sdcGUI <- function() {
                 }
               }
             } else {
-              gmessage("You have to select at least  one numeric or categoric variable and optional one weight variable, one cluster ID variable and several strata variables.",
-                  title="Information", icon="warning", parent=window)
+              gmessage("You have to select at least categoric key variable and optionally one weight variable, one cluster ID variable and/or several strata variables.",
+                  title="Information", icon="warning", parent=window)              
             }
           }
         })
