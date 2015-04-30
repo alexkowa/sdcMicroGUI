@@ -1340,7 +1340,7 @@ sdcGUI <- function() {
         }
         newName <- ginput("Please enter a new level name.", text=levName, parent=gr1_window)
         if( !is.na(newName) ) {
-          groupVars_tmp(v, h, newName)
+          groupVars_tmp(v, h, rep(newName,length(h)))
           showLevels(v)
           updateSummary(v)
         }
