@@ -1,5 +1,5 @@
 importFrom("tools","Rd2txt")
-import(vcd, foreign, Hmisc)
+import(vcd, foreign, Hmisc,tcltk)
 export(plot.indivRisk,sdcGUI,sdcGUIoutput)
-import(cairoDevice, gWidgetsRGtk2,sdcMicro)
+import(cairoDevice, gWidgetsRGtk2,sdcMicro,gWidgets)
 S3method(plot, indivRisk)

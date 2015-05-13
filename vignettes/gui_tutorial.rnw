@@ -20,7 +20,7 @@
 \newcommand{\boma}[1]{\mbox{\boldmath ${#1}$}}
 \newcommand{\sdcMicro}{\texttt{sdcMicro}}
 \newcommand{\sdcMicroGUI}{\texttt{sdcMicroGUI}}
-
+%\VignetteIndexEntry{Tutorial for sdcMicroGUI}
 \title{
 	\vspace{1cm}
  	{\Large \textbf{Tutorial %for \R-packages 
