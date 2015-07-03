@@ -6040,9 +6040,9 @@ compareDataExport <- function(comparedScript, len, ...){
   mbar$GUI$Quit$handler = quitGUI
   mbar$GUI$Restart$handler = restartGUI
   mbar$GUI$"Check for updates"$handler = updates22 <- function(...)updates2(restart=TRUE)
-  
   mbar$Data$"Import"$handler = newDataImport
   mbar$Data$"Export"$handler = newDataExport
+  mbar$Data$"Use R Dataset"$handler = setDataSet
   mbar$Data$"View"$"Original dataset"$handler = viewOriginalDataset
   mbar$Data$"View"$"Current dataset"$handler = viewDataset
   mbar$Data$"View"$"View Observations violating 2-anonymity"$handler = function(h, ...) viewkanon2anonymity()
