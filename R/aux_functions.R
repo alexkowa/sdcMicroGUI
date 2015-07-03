@@ -13,12 +13,29 @@ sdcGUIenv <- new.env()
 #  return(pos.to.env(pos))
 #}
 
-sdcGUIoutput <- function(){
+sdcGUIoutput <- function(givenSdcObject=NA){
+  if(existd("sdcObject")&&missing(givenSdcObject)){
+    givenSdcObject <- ActiveSdcObject()
+  }else if(!missing(givenSdcObject)){
+    data <- extractManipData(givenSdcObject)
+  }else{
+    stop("There is no object from the sdcGUI to retrieve.")
+  }
+  if(!is.null(givenSdcObject@deletedVars)){
+    data <- data[!names(data) %in% givenSdcObject@deletedVars]
+  }
+  return(data)  
+}
+getVarVectorFromsdcObject <-  function(){
+  ret <- c()
   if(existd("sdcObject")){
     sdc <- ActiveSdcObject()
-    return(extractManipData(sdc))
-  }else
-    stop("There is no object from the sdcGUI to retrieve.")
+    ret <- c(names(extractManipData(sdc)))
+    if(!is.null(sdc@deletedVars)) {
+      ret <- ret[!ret %in% sdc@deletedVars]
+    }
+  }
+  return(ret)  
 }
 putd <- function(x, value) {
   assign(x, value, envir=sdcGUIenv) # add () to sdcGUIenv
@@ -35,6 +52,20 @@ getd <- function(x, mode="any") {
 
 existd <- function(x, mode="any") {
   exists(x, envir=sdcGUIenv, mode=mode, inherits=FALSE) # add () to sdcGUIenv
+}
+openlastcwd <- function() {
+  if(existd("lastcwd")){
+    putd("cwd", getwd())
+    setwd(getd("lastcwd"))
+  }
+}
+setlastcwd <- function(dir) {
+  putd("lastcwd", dir)
+}
+resetcwd <- function() {
+  if(existd("cwd")){
+    setwd(getd("cwd"))
+  }
 }
 listd <- function(x){
   ls(envir=sdcGUIenv)
@@ -93,6 +124,115 @@ parseVarStr <- function(x, ...) {
   }
   s <- paste(s, ")", sep="")
   return(s)
+}
+
+parseVarStrLabel <- function(x, ...) {
+  if(length(x)==0)return("NULL")
+  s <- "c("
+  for ( i in 1:length(x) ) {
+    s <- paste(s, "'", strsplit(x[i], ":")[[1]][1], "'", sep="")
+    if (i < length(x)) {
+      s <- paste(s, ",", sep="")
+    }
+  }
+  s <- paste(s, ")", sep="")
+  return(s)
+}
+
+getVarNameFromLabel <- function(labels, ...) {
+  ads <- names(ActiveDataSet())
+  ord <- c()
+  if(length(labels)==0)return(character(0))
+  for( i in 1:length(labels) ) {
+    label <- strsplit(labels[i], ":")[[1]][1]
+    for( j in 1:length(ads) ) {
+      if( label == ads[j] ) {
+        ord <- c(ord, ads[j])
+      }
+    }
+  }
+  return(ord)  
+}
+
+getVarLabels <- function(Vars, ...) {
+  ord <- c()
+  if(length(Vars)==0)return(character(0))
+  activeVars <- names(ActiveDataSet())
+  datasettype <- getd("importFilenameType")
+  activeLabels <- rep("no label", times=length(activeVars))
+  if(datasettype == "STATA") {
+    activeLabels <- attr(ActiveDataSet(), 'var.labels')
+  } else if(datasettype == "SPSS") {
+    for( i in 1:1:length(activeVars)) {
+      activeLabels[i] <- label(ActiveDataSet())[[i]]
+    }
+  }
+  categories <- sapply(ActiveDataSet(), nlevels)
+  numericals <- sapply(ActiveDataSet(), is.numeric)
+  for( i in 1:length(Vars) ) {
+    for( j in 1:length(activeVars) ) {
+      if( Vars[i] == activeVars[j] ) {
+        infostr <- ''
+        if(categories[j] > 0 ) {
+          infostr <- paste(paste(paste("(", categories[j], sep=''), "categories", sep=" "), ")", sep="")
+        } else if(numericals[j]) {
+          infostr <- paste(paste("(", "Numerical", sep=""), ")", sep="")
+        }
+        ord <- c(ord, paste(paste(Vars[i], activeLabels[j], sep=':'), infostr, sep=' '))
+      }
+    }
+  }
+  return(ord)  
+}
+
+getVarType <- function(var, ...) {
+  sdc <- ActiveSdcObject()
+  if(var %in% names(sdc@manipKeyVars)) {
+    return("Categorical Key")
+  } else if(var %in% names(sdc@manipNumVars)) {
+    return("Continuous Key")
+  } else if(var %in% names(sdc@origData[sdc@weightVar])) {
+    return("Weight")
+  } else if(var %in% names(sdc@origData[sdc@strataVar])) {
+    return("Strata")
+  } else if(var %in% names(sdc@origData[sdc@hhId])) {
+    return("Cluster-Id")
+  } else if(var %in% names(sdc@sensibleVar)) {
+    return("Sensitive")
+  } else {
+    return(" ")
+  }
+}
+
+getVarTypes <- function(vars, ...) {
+  return (sapply(vars, getVarType))
+}
+
+getNameLabelList <- function(Vars, ...) {
+  if(length(Vars)==0) {
+    return(character(0))
+  }
+  activeVars <- names(ActiveDataSet())
+  datasettype <- ""
+  if(existd("importFilenameType")) {
+    datasettype <- getd("importFilenameType")
+  }
+  activeLabels <- rep("", times=length(activeVars))
+  if(datasettype == "STATA") {
+    activeLabels <- attr(ActiveDataSet(), 'var.labels')
+  } else if(datasettype == "SPSS") {
+    for( i in 1:1:length(activeVars)) {
+      activeLabels[i] <- label(ActiveDataSet())[[i]]
+    }
+  }
+  ret <- as.list(setNames(activeLabels, activeVars))
+  ret <- ret[names(ret) %in% Vars]
+  for( i in 1:length(ret) ) {
+    if(nchar(ret[i]) == 0) {
+      ret[i] <- names(ret[i])
+    }
+  }
+  return(ret)
 }
 
 # getIndex to get the col index of categorical, numerical and weight vars
