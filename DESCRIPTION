@@ -1,9 +1,9 @@
 Package: sdcMicroGUI    
 Type: Package    
 Title: Graphical User Interface for Package sdcMicro    
-Version: 1.2.0 
-Date: 2015-04-30 
-Author: Alexander Kowarik, Matthias Templ, Bernhard Meindl, Francois Fonteneau    
+Version: 1.2.1 
+Date: 2015-07-03 
+Author: Alexander Kowarik, Matthias Templ, Bernhard Meindl, Francois Fonteneau, Ornulf Risnes, Richard Welpton   
 Maintainer: Alexander Kowarik <alexander.kowarik@statistik.gv.at>
 Description: A point and click graphical user interface based on top of the    
     'sdcMicro' package to create anonymized data set. The graphical user    
