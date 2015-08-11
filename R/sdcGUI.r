@@ -34,38 +34,38 @@ sdcGUI <- function() {
     xtmp <- ActiveSdcVars("manipKeyVars")
     ft <- as.data.frame(ftable(xtmp[,formX,drop=FALSE]))
     ft <- ft[ft$Freq!=0,]
-    if(nrow(ft)>40){ 
-      plot(1,main="Two many classes for a nice mosaic plot!")
+    if(nrow(ft)>40){
+      plot(1,main="Too many classes to show a nice mosaic plot!")
     }else{
       mosaic(as.formula(paste("~",paste(formX,collapse="+"),sep="")),data=xtmp,shade=FALSE)
     }
   }
   #data(free1)
   #data(testdata)
-  # 
-  
+  #
+
   .findHelpPage <- function(topic, package=NULL) {
     l <- list(topic=topic)
     if(!is.null(package))
       l$package <- package
     out <- do.call("help", l)
     if(length(out) == 0) return(NULL)
-    
+
     pkgname <-  basename(dirname(dirname(out)))
-    
+
     ## thanks to Josef L for this
-    help.txt <- "" ## keep R CMD check happy  
+    help.txt <- "" ## keep R CMD check happy
     help.con <- textConnection("help.txt", "w", local = TRUE)
     Rd2txt(.getHelpFile_sdcMicroGUI(out), out=help.con, package=pkgname,
         width=80L)
     close(help.con)
-    
+
     return(list(x=help.txt,topic=topic, package=pkgname))
   }
   .insertHelpPage <- function(obj, x) {
     isSlow <- obj@toolkit@toolkit == "tcltk" || obj@toolkit@toolkit == "RGtk2"
     dispose(obj)       # clear
-    
+
     out <- c()
     for(i in x) {
       if(grepl("^_\b",i)) {
@@ -83,23 +83,23 @@ sdcGUI <- function() {
     if(isSlow)
       svalue(obj) <- out
     else
-      insert(obj, "", do.newline=FALSE, where="beginning")              
+      insert(obj, "", do.newline=FALSE, where="beginning")
   }
   helpR <- function(topic){
     print(help(topic))
   }
-  
-  
+
+
   # Script
   #
   Script <- function(name, ...) {
     if( missing(name) ) {
       getd("activeScript")
-    } else { 
+    } else {
       putd("activeScript", name)
     }
   }
-  
+
   Script.new <- function(...) {
     xtmp <- list(cmd=c())
     putd("activeScript", xtmp)
@@ -108,13 +108,13 @@ sdcGUI <- function() {
     eval(parse(text=cmd.seed))
     Script.add(cmd.seed)
   }
-  
+
   Script.add <- function(cmd, ...) {
     xtmp <- Script()
     xtmp$cmd[length(xtmp$cmd)+1] = cmd
     Script(xtmp)
   }
-  
+
   Script.run <- function(xscr, ...) {
     if( missing(xscr) ) {
       xcmd <- Script()
@@ -145,8 +145,8 @@ sdcGUI <- function() {
         ActiveSdcVarsStr("hhId"),ActiveSdcVarsStr("strataVar"))
     dispose(xprogress)
   }
-  
-  
+
+
   viewkanon <- function(){
     fk <- ActiveSdcVars("risk")$individual[,2]
     TFfk <- fk<3
@@ -219,7 +219,7 @@ sdcGUI <- function() {
     vkT <- gtable(data.frame(apply(xtmp,2,function(x)as.character(x)),stringsAsFactors=FALSE))
     size(vkT) <- c(800,600)
     add(mainGroup1, vkT)
-  }  
+  }
   # function for button ir_button (plotIndivRisk)
   # indivRiskGroup function
   # x ... object of class indivRisk
@@ -329,7 +329,7 @@ sdcGUI <- function() {
       try(abline(v=mu, col="blue", lwd=2), silent=TRUE)
     }
   }
-  
+
   # FreqCalc and indivRisk calculation - freqCalc()
   #                                    - indivRisk()
   # TODO: not needed - save freqCalcIndivRisk for script/history
@@ -350,7 +350,7 @@ sdcGUI <- function() {
             insert(ffc_print, tmp[i])
           }
         }
-      } 
+      }
     }
     if( length(tmp)> 1 ) {
       for( i in 2:length(tmp) ) {
@@ -359,7 +359,7 @@ sdcGUI <- function() {
     }
     #-- End - print.freqCalc
     #-- Start - summary.freqCalc
-    
+
     tmp <- capture.output(printLocalSuppression(ActiveSdcObject()))
     svalue(fc_summary) <- tmp[1]
     if( length(tmp)> 1 ) {
@@ -370,7 +370,7 @@ sdcGUI <- function() {
       }
     }
     recode_summary[,] <- returnRecode(ActiveSdcObject())
-    
+
     #Measure Risk Funktion
     if(!is.null(ActiveSdcVars())){
       tmp <- capture.output(printMeasure_riskComp(ActiveSdcObject()))
@@ -386,12 +386,12 @@ sdcGUI <- function() {
     #-- End - print.indivRisk
     dispose(xprogressFQ)
   }
-  
+
   # TODO: var to factor tmp
   varToFactor_tmp <- function(var){
-    Script.add(paste("sdcObject <- varToFactor(sdcObject,var=", 
-            parseVarStr(var), 
-            ")", sep=""))  
+    Script.add(paste("sdcObject <- varToFactor(sdcObject,var=",
+            parseVarStr(var),
+            ")", sep=""))
     ActiveSdcObject(varToFactor(ActiveSdcObject(),var=var))
   }
   varToNumeric_tmp <- function(var){
@@ -408,28 +408,28 @@ sdcGUI <- function() {
       }
     }else{
       ActiveSdcObject(varToNumeric(ActiveSdcObject(),var=var))
-      Script.add(paste("sdcObject <- varToNumeric(sdcObject,var=", 
-              parseVarStr(var), 
+      Script.add(paste("sdcObject <- varToNumeric(sdcObject,var=",
+              parseVarStr(var),
               ")", sep=""))
     }
 #	print(head(xtmp))
-    
+
   }
   pram_tmp <- function(var,strata_var=NULL){
     xprogress = gwindow("please wait", width=180, height=40)
     glabel("... script running ...", container=xprogress)
     if(length(strata_var)>0){
       strata_var <- parseVarStr(strata_var)
-      Script.add(paste("sdcObject <- pram(sdcObject,variables=", 
-              parseVarStr(var),",strata_variables=",strata_var, 
-              "",")", sep="")) 
+      Script.add(paste("sdcObject <- pram(sdcObject,variables=",
+              parseVarStr(var),",strata_variables=",strata_var,
+              "",")", sep=""))
       ActiveSdcObject(pram(ActiveSdcObject(),variables=var,strata_variables=strata_var))
     }else{
       strata_var <- parseVarStr(strata_var)
-      Script.add(paste("sdcObject <- pram(sdcObject,variables=", 
-              parseVarStr(var),"",")", sep="")) 
+      Script.add(paste("sdcObject <- pram(sdcObject,variables=",
+              parseVarStr(var),"",")", sep=""))
       ActiveSdcObject(pram(ActiveSdcObject(),variables=var))
-    } 
+    }
     freqCalcIndivRisk()
     dispose(xprogress)
   }
@@ -443,8 +443,8 @@ sdcGUI <- function() {
     freqCalcIndivRisk()
     dispose(xprogress)
   }
-  
-  
+
+
   # microaggregation_tmp - microaggregation()
   # TODO: done - save microaggregation for script/history
   microaggregation_tmp <- function(aggr, method, vars,strata_variables=NULL) {
@@ -458,7 +458,7 @@ sdcGUI <- function() {
       Script.add(paste("sdcObject <- microaggregation(sdcObject,aggr=", parseVar(aggr), ", method=",
               parseVarStr(method), ", variables=", parseVarStr(vars),",strata_variables=",parseVarStr(strata_variables), ")",
               sep=""))
-      
+
     }
     ActiveSdcObject(microaggregation(ActiveSdcObject(), method=method, aggr=aggr,variables=vars,strata_variables=strata_variables))
     freqCalcIndivRisk()
@@ -477,7 +477,7 @@ sdcGUI <- function() {
     x <- l$x
     .insertHelpPage(t, x)
     svalue(nb) <- 1
-    
+
     tmp = gframe("key-Variable to supress", container=nm2_windowGroup, horizontal=FALSE)
     VarSel = gdroplist(ActiveSdcVarsStr())
     tt_var <- "For observation with risk above the threshold, this variable will be deleted."
@@ -492,7 +492,7 @@ sdcGUI <- function() {
           xprogress = gwindow("please wait", width=180, height=40)
           glabel("... script running ...", container=xprogress)
           Script.add(paste("sdcObject <- localSupp(sdcObject,threshold=", parseVar(getd("threshold")),",keyVar=",parseVarStr(Var),")",sep=""))
-          
+
           ActiveSdcObject(localSupp(ActiveSdcObject(), threshold=getd("threshold"),keyVar=Var))
           freqCalcIndivRisk()
           dispose(nm2_window)
@@ -501,11 +501,11 @@ sdcGUI <- function() {
         })
     gbutton("Cancel ", container=nm2_windowButtonGroup, handler=function(h,...) { dispose(nm2_window) })
     gbutton("Help ", container=nm2_windowButtonGroup, handler=function(h,...) { helpR("microaggregation") })
-    
-    
-    
-    
-    
+
+
+
+
+
   }
   # shuffle_tmp - shuffle()
   shuffle_tmp <- function( method,regmethod,covmethod, xvars,yvars) {
@@ -530,7 +530,7 @@ sdcGUI <- function() {
     x <- l$x
     .insertHelpPage(t, x)
     svalue(nb) <- 1
-    
+
     tmp = gframe('<span weight="bold" size="medium">k-Anonymity parameter</span>',
         container=ls3_pars,markup=TRUE)
     x = gslider(2, 12, by=1)
@@ -543,7 +543,7 @@ sdcGUI <- function() {
     for( i in 1:length(y_tmp) ) {
       fns <- eval(parse(text=paste("
                       function(...){
-                      if(existd(\"impslider\")){      
+                      if(existd(\"impslider\")){
                       ii <- ",i,"
                       y <- getd(\"impslider\")
                       yval <- as.numeric(as.vector(lapply(y,svalue)))
@@ -553,7 +553,7 @@ sdcGUI <- function() {
                       for(i in 1:length(yval)){
                       svalue(y[[i]]) <- yval[i]
                       }
-                      } 
+                      }
                       }
                       ",sep="")))
       y[[i]] <- gslider(from=1, to=length(importance), by=1, value=importance[i],handler=fns)
@@ -580,8 +580,8 @@ sdcGUI <- function() {
         })
     gbutton("Cancel ", container=ls3_parsButtonGroup, handler=function(h,...) { dispose(nm2_window) })
     gbutton("Help ", container=ls3_parsButtonGroup, handler=function(h,...) { helpR("localSuppression") })
-    
-    
+
+
   }
   # function for nm_button2
   # globalRecodeGroup-numericalMethods function
@@ -590,7 +590,7 @@ sdcGUI <- function() {
     tt_aggr <- "aggregation level (default=3)"
     tt_method <- "mdav, rmd, pca, clustpppca, influence"
     tt_ltr <- "Add selected variable(s)"
-    tt_rtl <- "Remove selected variable(s)" 
+    tt_rtl <- "Remove selected variable(s)"
     tt_ltr1 <- "Add selected strata variable(s)"
     tt_rtl1 <- "Remove selected strata variable(s)"
     lTOr <- function(h, ...) {
@@ -697,7 +697,7 @@ sdcGUI <- function() {
         }
       }
     }
-    
+
     nm2_window = gwindow("Microaggregation", width=230, parent=window,height=600)
     nb <- gnotebook(container=nm2_window, closebuttons=FALSE)
     #Main
@@ -708,7 +708,7 @@ sdcGUI <- function() {
     x <- l$x
     .insertHelpPage(t, x)
     svalue(nb) <- 1
-    
+
     tmp = gframe('<span weight="bold" size="medium">Aggregation level (size of the groups)</span>',
         container=nm2_windowGroup, horizontal=FALSE,markup=TRUE)
     ntmp = ggroup(container=tmp)
@@ -743,8 +743,8 @@ sdcGUI <- function() {
     selTab = gtable(data.frame(vars=character(0), stringsAsFactors=FALSE), multiple=TRUE)
     size(selTab) <- c(120,200)
     add(tmp, selTab)
-    
-    
+
+
     tmp = gframe('<span weight="bold" size="medium">Strata Variable selection</span>',
         container=nm2_windowGroup,markup=TRUE)
     sVars <- c()
@@ -769,8 +769,8 @@ sdcGUI <- function() {
     selTab1 = gtable(data.frame(vars=character(0), stringsAsFactors=FALSE), multiple=TRUE)
     size(selTab1) <- c(120,200)
     add(tmp, selTab1)
-    
-    
+
+
     gseparator(container=nm2_windowGroup)
     nm2_windowButtonGroup = ggroup(container=nm2_windowGroup)
     addSpring(nm2_windowButtonGroup)
@@ -789,7 +789,7 @@ sdcGUI <- function() {
   }
   ldiv1 <- function(...) {
     tt_ltr <- "Add selected variable(s)"
-    tt_rtl <- "Remove selected variable(s)" 
+    tt_rtl <- "Remove selected variable(s)"
     tt_slider1 <- "l_recurs_c Parameter"
     lTOr <- function(h, ...) {
       if( length(h)>0 ) {
@@ -843,7 +843,7 @@ sdcGUI <- function() {
         }
       }
     }
-    
+
     nm2_window = gwindow("l-diversity", width=230, parent=window,height=600)
     nb <- gnotebook(container=nm2_window, closebuttons=FALSE)
     #Main
@@ -860,10 +860,10 @@ sdcGUI <- function() {
     tooltip(recconst) <- tt_slider1
     enabled(recconst) = TRUE
     add(tmp, recconst, expand=TRUE)
-    
+
     tmp = gframe('<span weight="bold" size="medium">Choose sensitive variable(s)</span>',
         container=nm2_windowGroup, horizontal=FALSE,markup=TRUE)
-    
+
     xtmp <- ActiveSdcObject()@origData
     numVars <- ActiveSdcVarsStr("numVars")
     keyVars <- ActiveSdcVarsStr()
@@ -871,7 +871,7 @@ sdcGUI <- function() {
     wVars <- ActiveSdcVarsStr("weightVar")
     sVars <- ActiveSdcVarsStr("strataVar")
     posssensVars <- colnames(xtmp)[!colnames(xtmp)%in%c(numVars,keyVars,hVars,wVars,sVars)]
-    
+
     varTab = gtable(data.frame(vars=posssensVars, stringsAsFactors=FALSE), multiple=TRUE)
     size(varTab) <- c(120,200)
     add(tmp, varTab)
@@ -885,7 +885,7 @@ sdcGUI <- function() {
     selTab = gtable(data.frame(vars=character(0), stringsAsFactors=FALSE), multiple=TRUE)
     size(selTab) <- c(120,200)
     add(tmp, selTab)
-    
+
     gseparator(container=nm2_windowGroup)
     nm2_windowButtonGroup = ggroup(container=nm2_windowGroup)
     addSpring(nm2_windowButtonGroup)
@@ -910,8 +910,8 @@ sdcGUI <- function() {
             gte <- gtext("", container=tmp, height=250, width=500)
             vk_button = gbutton("View Observations violating 2 l-diversity", container=tmp,
                 handler=function(h, ...) viewldiv())
-            
-            
+
+
             svalue(gte) <- capture.output(print(ActiveSdcObject()@risk$ldiversity),append=FALSE)
             gseparator(container=nm2_windowGroup)
             nm2_windowButtonGroup = ggroup(container=nm2_windowGroup)
@@ -923,7 +923,7 @@ sdcGUI <- function() {
     gbutton("Cancel ", container=nm2_windowButtonGroup, handler=function(h,...) { dispose(nm2_window) })
     gbutton("Help ", container=nm2_windowButtonGroup, handler=function(h,...) { helpR("ldiversity") })
   }
-  
+
   # addNoise_tmp - addNoise()
   # TODO: done - save addNoise for script/history
   addNoise_tmp <- function(noise, method, vars) {
@@ -936,7 +936,7 @@ sdcGUI <- function() {
     nm_risk_print_function()
     dispose(xprogress)
   }
-  
+
   # function for nm_button1
   nm1 <- function(...) {
     #ToolTip Addnoise Window
@@ -1056,13 +1056,13 @@ sdcGUI <- function() {
             } else {
               addNoise_tmp(noise, svalue(methodSel), selTab[])
               dispose(nm1_window)
-            } 
+            }
           }
         })
     gbutton("Cancel ", container=nm1_windowButtonGroup, handler=function(h,...) { dispose(nm1_window) })
     gbutton("Help ", container=nm1_windowButtonGroup, handler=function(h,...) { helpR("addNoise") })
   }
-  
+
   # function for shuffle_button1
   shuffle1 <- function(...) {
     #Tooltip SHUFFLE
@@ -1070,7 +1070,7 @@ sdcGUI <- function() {
     tt_regmethod <- "lm, MM"
     tt_covmethod <- c("spearman, pearson, mcd")
     tt_ltr <- "Add selected variable(s)"
-    tt_rtl <- "Remove selected variable(s)" 
+    tt_rtl <- "Remove selected variable(s)"
     tt_ltr1 <- "Add selected strata variable(s)"
     tt_rtl1 <- "Remove selected strata variable(s)"
     lTOr <- function(h, ...) {
@@ -1184,7 +1184,7 @@ sdcGUI <- function() {
         }
       }
     }
-    
+
     nm2_window = gwindow("Shuffling", width=230, parent=window,height=600)
     nb <- gnotebook(container=nm2_window, closebuttons=FALSE)
     #Main
@@ -1195,7 +1195,7 @@ sdcGUI <- function() {
     x <- l$x
     .insertHelpPage(t, x)
     svalue(nb) <- 1
-    
+
     tmp = gframe('<span weight="bold" size="medium">Shuffling Method</span>',
         container=nm2_windowGroup, horizontal=FALSE,markup=TRUE)
     methodSel = gdroplist(c("ds","mvn", "mlm"))
@@ -1211,8 +1211,8 @@ sdcGUI <- function() {
     covmethodSel = gdroplist(c("spearman","pearson","mcd"))
     tooltip(covmethodSel) <- tt_covmethod
     add(tmp, covmethodSel)
-    
-    
+
+
     tmp = gframe('<span weight="bold" size="medium">Numerical variable selection (Responses)</span>',
         container=nm2_windowGroup,markup=TRUE)
     numVars <- c()
@@ -1230,8 +1230,8 @@ sdcGUI <- function() {
     selTab = gtable(data.frame(vars=character(0), stringsAsFactors=FALSE), multiple=TRUE)
     size(selTab) <- c(120,200)
     add(tmp, selTab)
-    
-    
+
+
     tmp = gframe('<span weight="bold" size="medium">Variable selection (Predictors)</span>',
         container=nm2_windowGroup,markup=TRUE)
     xtmp <- ActiveDataSet()
@@ -1249,8 +1249,8 @@ sdcGUI <- function() {
     selTab1 = gtable(data.frame(vars=character(0), stringsAsFactors=FALSE), multiple=TRUE)
     size(selTab1) <- c(120,200)
     add(tmp, selTab1)
-    
-    
+
+
     gseparator(container=nm2_windowGroup)
     nm2_windowButtonGroup = ggroup(container=nm2_windowGroup)
     addSpring(nm2_windowButtonGroup)
@@ -1267,9 +1267,9 @@ sdcGUI <- function() {
         })
     gbutton("Cancel ", container=nm2_windowButtonGroup, handler=function(h,...) { dispose(nm2_window) })
     gbutton("Help ", container=nm2_windowButtonGroup, handler=function(h,...) { helpR("shuffle") })
-    
+
   }
-  
+
   # needed sub functions
   # TODO: done - save rename for script/history
   renameVars_tmp <- function(v, h, newName, redo=FALSE) {
@@ -1289,7 +1289,7 @@ sdcGUI <- function() {
   }
   # group and rename variables
   # globalRecodeGroup function
-  
+
   # globalRecode_tmp - globalRecode()
   # TODO: replace cut with globalRecode as soon as it is corrected
   # TODO: done - save globalRecode for script/history
@@ -1303,7 +1303,7 @@ sdcGUI <- function() {
     ActiveSdcObject(globalRecode(ActiveSdcObject(),column=var,breaks=breaks,labels=labels))
     #freqCalcIndivRisk()
   }
-  
+
   # globalRecodeGroup function
   vc <- function(...) {
     renameFacVar <- function(h, v, ...) {
@@ -1407,7 +1407,7 @@ sdcGUI <- function() {
       }else{
         indexAllKeys <- 1:length(ActiveSdcVars())
         if(existd("SummaryTab")){
-          
+
           #gr1_head <- getd("gr1_head")
           #gr1_summary <- getd("gr1_summary")
           SummaryTab <- getd("SummaryTab")
@@ -1488,7 +1488,7 @@ sdcGUI <- function() {
     hideLevels <- function(h, ...) {
       facTab <- getd("facTab")
       i <- which(ActiveSdcVarsStr()==h)
-      x <- facTab[[i]] 
+      x <- facTab[[i]]
       x[,] <- character(0)
       gr3_windowButton1 <- getd("gr3_windowButton1")
       gr3_windowButton2 <- getd("gr3_windowButton2")
@@ -1507,7 +1507,7 @@ sdcGUI <- function() {
           svalue(rb[[k]]) <- "Numeric"
         }
       }
-      
+
     }
     keyname <- ActiveSdcVarsStr()
     gr1_window = gwindow("Choose parameters for globalRecode", width=1100, parent=window)
@@ -1545,9 +1545,9 @@ sdcGUI <- function() {
                       var <- ActiveSdcObject()@manipKeyVars[,name]
                       updateSummary(name)
                       }",sep="")))
-      
+
       addHandlerClicked(rb[[i]], handler=rbfun[[i]])
-      
+
       #glabel("Head:",container=tmp)
       #gr1_head[[i]] <- gtext("", container=tmp, height=50, width=250)
       SummaryTabFrame[[i]] <- gframe(text='<span weight="bold" size="medium">Frequencies:</span>',
@@ -1562,12 +1562,12 @@ sdcGUI <- function() {
       size(SummaryTab[[i]]) <- c(800,100)
       add(SummaryTabFrame[[i]], SummaryTab[[i]])
       #putd("SummaryTab",SummaryTab[[i]])
-      
+
       #gr1_summary[[i]] <- gtext("", container=tmp, height=50, width=250)
       #svalue(gr1_summary[[i]]) <- capture.output(print(summary(xtmp[,keyname[i]])),append=FALSE)
-      
+
       #svalue(gr1_head[[i]]) <- capture.output(print(head(xtmp[,keyname[i]])),append=FALSE)
-      
+
       tmp2 <- gframe("", container=tmp, horizontal=TRUE)
       #####Recode to Factor
       tmpRecFac <-  gframe('<span weight="bold" size="medium">Recode to factor</span>',
@@ -1631,9 +1631,9 @@ sdcGUI <- function() {
                       } else {
                       labels <- FALSE
                       }
-                      }        
+                      }
                       if( gr_do ) {
-                      globalRecode_tmp (name, breaks, labels)     
+                      globalRecode_tmp (name, breaks, labels)
                       #var <- ActiveDataSet()[,name]
                       rb <- getd("rb")
                       blockHandler(rb[[index]])
@@ -1658,8 +1658,8 @@ sdcGUI <- function() {
       glabel(lab, container=tmpRecFac)
       labelsInput[[i]] = gedit()
       add(tmpRecFac, labelsInput[[i]] , expand=TRUE)
-      
-      
+
+
       gseparator(container=tmp)
       ##Group/Rename Factor
       tmpGroupFac <-  gframe('<span weight="bold" size="medium">Group a factor</span>',
@@ -1676,18 +1676,18 @@ sdcGUI <- function() {
                       renameFacVar(svalue(facTab[[',i,']]), "',keyname[i],'")
                       }
                       ',sep="")))
-      
-      
+
+
       gr3_windowButton1[[i]] <- gbutton("Rename selected level",
           handler= renameFacVarFun[[i]])
       enabled(gr3_windowButton1[[i]]) <- FALSE
       groupFacVarFun[[i]] <- eval(parse(text=paste('
                       function(h,...) {
                       facTab <- getd("facTab")
-                      groupFacVar(svalue(facTab[[',i,']]), "',keyname[i],'") 
+                      groupFacVar(svalue(facTab[[',i,']]), "',keyname[i],'")
                       }
                       ',sep="")))
-      
+
       gr3_windowButton2[[i]] <-  gbutton("Group selected levels",
           handler=groupFacVarFun[[i]])
       enabled(gr3_windowButton2[[i]]) <- FALSE
@@ -1711,22 +1711,22 @@ sdcGUI <- function() {
     putd("labelsInput",labelsInput)
     putd("rb",rb)
     putd("gr1_window",gr1_window)
-    putd("facTab",facTab)    
+    putd("facTab",facTab)
     putd("gr3_windowButton1",gr3_windowButton1)
     putd("gr3_windowButton2",gr3_windowButton2)
     #putd("gr1_head",gr1_head)
     #putd("gr1_summary",gr1_summary)
     putd("SummaryTab",SummaryTab)
     putd("SummaryTabFrame",SummaryTabFrame)
-    
-    
+
+
     #Insert Levels in List for Factor variables
     for(i in 1:length(keyname)){
       if(is.factor(xtmp[,keyname[i]])){
         showLevels(keyname[i])
       }
     }
-    
+
     ##Mosaic Plot
     t <- ggraphics(container=nb, label="Mosaic Plot")
     mosdev <- dev.cur()
@@ -1752,7 +1752,7 @@ sdcGUI <- function() {
     ind <- !duplicated(apply(xtmp,1,function(x)paste(x,collapse="_")))
     tabDat <- tabDat[ind,]
     tabDat$risk <- round(tabDat$risk,5)
-    tabDat <- tabDat[order(as.numeric(tabDat$risk),decreasing=TRUE),]    
+    tabDat <- tabDat[order(as.numeric(tabDat$risk),decreasing=TRUE),]
     FreqT <- gtable(data.frame(apply(tabDat,2,function(x)as.character(x)),stringsAsFactors=FALSE))
     size(FreqT) <- c(900,500)
     FreqTT_2 <- gframe('<span weight="bold" size="medium">Frequencies for combinations of cat. key variables</span>',
@@ -1774,7 +1774,7 @@ sdcGUI <- function() {
         handler=function(h,...) {dispose(gr1_window) } )
     #gbutton("Cancel ", container=okCancelGroup, handler=function(h,...) dispose(gr1_window) )
     gbutton("Help ", container=okCancelGroup, handler=function(h,...) helpR("globalRecode") )
-    
+
     #Plot ausfuehren
     for(i in length(keyname):1){
       ggraphics(container=GraphFrame[[i]],width=500,heigth=500)
@@ -1793,7 +1793,7 @@ sdcGUI <- function() {
     putd("gdev",gdev)
     svalue(nb) <- 1
   }
-  
+
   removeDirectID_tmp <- function(var){
     cmd <- paste("sdcObject <- removeDirectID(sdcObject,var=",parseVarStr(var),")",sep="")
     Script.add(cmd)
@@ -1865,8 +1865,8 @@ sdcGUI <- function() {
     x <- l$x
     .insertHelpPage(t, x)
     svalue(nb) <- 1
-    
-    
+
+
     tmp = gframe('<span weight="bold" size="medium">Select variables to be removed from data set</span>',
         container=p1_windowGroup,markup=TRUE)
     ###Select categorical variables
@@ -1893,8 +1893,8 @@ sdcGUI <- function() {
     size(selTab) <- c(120,200)
     add(tmp, selTab)
     gseparator(container=p1_windowGroup)
-    
-    
+
+
     p1_windowButtonGroup = ggroup(container=p1_windowGroup)
     addSpring(p1_windowButtonGroup)
     gbutton("Ok", container=p1_windowButtonGroup,
@@ -1905,18 +1905,18 @@ sdcGUI <- function() {
             var <- selTab[]
             message <- paste("Do you really want to remove the following variables from the data set?\n",paste(var,collapse=","))
             TF <- gconfirm(message, title="Confirm", icon = "question", parent=p1_window)
-            
+
             if(TF){
               removeDirectID_tmp(var)
               dispose(p1_window)
             }
-          } 
+          }
         })
     gbutton("Cancel ", container=p1_windowButtonGroup, handler=function(h,...) { dispose(p1_window) })
     gbutton("Help ", container=p1_windowButtonGroup, handler=function(h,...) { helpR("removeDirectID") })
-  } 
-  
-  
+  }
+
+
   pram1 <- function(...) {
     #ToolTip Pram Window
     tt_var <- "choose categorical variables for Pram"
@@ -2037,8 +2037,8 @@ sdcGUI <- function() {
     x <- l$x
     .insertHelpPage(t, x)
     svalue(nb) <- 1
-    
-    
+
+
     tmp = gframe('<span weight="bold" size="medium">Variable Selection</span>',
         container=p1_windowGroup,markup=TRUE)
     ###Select categorical variables
@@ -2047,8 +2047,8 @@ sdcGUI <- function() {
     thr_cat <- max(100,nrow(ActiveSdcObject()@origData)*.05)
     keyVars <- ActiveSdcVarsStr()
     allVars <- c(allVars[uniq<=thr_cat],keyVars)
-    
-    
+
+
     varTab = gtable(data.frame(vars=allVars, stringsAsFactors=FALSE), multiple=TRUE)
     size(varTab) <- c(120,200)
     add(tmp, varTab)
@@ -2063,8 +2063,8 @@ sdcGUI <- function() {
     size(selTab) <- c(120,200)
     add(tmp, selTab)
     gseparator(container=p1_windowGroup)
-    
-    
+
+
     #Select strata_variables
     tmp = gframe('<span weight="bold" size="medium">Strata Variable Selection</span>',
         container=p1_windowGroup,markup=TRUE)
@@ -2083,7 +2083,7 @@ sdcGUI <- function() {
     size(selTab1) <- c(120,200)
     add(tmp, selTab1)
     gseparator(container=p1_windowGroup)
-    
+
     p1_windowButtonGroup = ggroup(container=p1_windowGroup)
     addSpring(p1_windowButtonGroup)
     gbutton("Ok", container=p1_windowButtonGroup,
@@ -2097,22 +2097,22 @@ sdcGUI <- function() {
                   title="Warning", icon="warn", parent=p1_window)
             else
               TFKey <- TRUE
-            if(TFKey){ 
+            if(TFKey){
               var <- selTab[]
               svar <- sTab[]
               if(length(svar)==0) svar <- NULL
               pram_tmp(var, svar)
-              
+
               dispose(p1_window)
               enabled(pram_button2) <- TRUE
               viewpram1()
-              
+
             }
-          } 
+          }
         })
     gbutton("Cancel ", container=p1_windowButtonGroup, handler=function(h,...) { dispose(p1_window) })
     gbutton("Help ", container=p1_windowButtonGroup, handler=function(h,...) { helpR("pram") })
-  }  
+  }
   viewpram1 <- function(...){
     p1_window = gwindow("Pram", width=230, parent=window)
     nb <- gnotebook(container=p1_window, closebuttons=FALSE)
@@ -2127,12 +2127,12 @@ sdcGUI <- function() {
     tmp = gframe('<span weight="bold" size="medium">Pram output</span>',
         container=p1_windowGroup,markup=TRUE)
     ps <- ActiveSdcObject()@pram$summary
-    
+
     varTab = gtable(ps, multiple=TRUE)
     size(varTab) <- c(400,300)
     add(tmp, varTab)
-    
-    
+
+
     gbutton("Close", container=p1_windowGroup, handler=function(h,...) { dispose(p1_window) })
     gbutton("Help ", container=p1_windowGroup, handler=function(h,...) { helpR("pram") })
   }
@@ -2219,11 +2219,11 @@ sdcGUI <- function() {
     addSpring(saveCancelGroup)
     gbutton("Overwrite ads", container=saveCancelGroup, handler=function(h,...) saveAds() )
     gbutton("Cancel ", container=saveCancelGroup, handler=function(h,...) sureQuit() )
-    
+
     add(scriptWindow, scriptWidget)
     focus(xcom)
   }
-  
+
   # TODO: nm_risk_print_function
   # nm_risk_print output function
   nm_risk_print_function <- function(...) {
@@ -2238,26 +2238,26 @@ sdcGUI <- function() {
       #  obj@options <- optionss
       ActiveSdcObject(dUtility(dRisk(obj)))
       #}
-      
+
       risk <- ActiveSdcVars("risk")
       originalRisk <- ActiveSdcVars("originalRisk")
       utility <- ActiveSdcVars("utility")
-      
-      svalue(nm_risk_print) <- paste("Disclosure Risk is between: \n [0% ; ", 
-          round(100*risk$numeric,2), "%] (current)\n 
+
+      svalue(nm_risk_print) <- paste("Disclosure Risk is between: \n [0% ; ",
+          round(100*risk$numeric,2), "%] (current)\n
               (orig: [0 %,", 100, "%]) \n",sep="")
-      
-      svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ", 
+
+      svalue(nm_util_print) <- paste("- Information Loss:\n    IL1: ",
           round(utility$il1,2),"\n  - Difference Eigenvalues: ",round(utility$eigen*100,2)," %",
           "\n\n (orig: Information Loss: 0) \n",sep="")
       dispose(xprogress)
     }
   }
-  
+
   generateStrata_tmp <- function(stratavars,name){
     putd("sLen", 1)
     putd("sVars",name)
-    
+
     xtmp <- ActiveDataSet()
     strata <- rep("",nrow(xtmp))
     for(i in 1:length(stratavars)){
@@ -2279,7 +2279,7 @@ sdcGUI <- function() {
     #print(ActiveDataSet())
     ft <- function(f, t, h, var, pm, ...) {
       # pm: 1 for +, 0 for -
-      count = getd(var) 
+      count = getd(var)
       if( pm == 1 ) {
         count <- count + length(h);
       } else {
@@ -2317,17 +2317,17 @@ sdcGUI <- function() {
     selVar_windowGroup = ggroup(container=selVar_window, horizontal=FALSE)
     selVar_main = ggroup(container=selVar_windowGroup)
     mtmp = ggroup(container=selVar_main)
-    
+
     allVars <-names(ActiveDataSet())
-    
-    
-    
-    
-    
+
+
+
+
+
     # If it is not the first call to selVar, the previous selection is read
     if(existd("sdcObject")){
       sdcObject <- getd("sdcObject")
-      
+
       keyVars <- ActiveSdcVarsStr("keyVars")
       numVars <- ActiveSdcVarsStr("numVars")
       wVars <- ActiveSdcVarsStr("weightVar")
@@ -2352,9 +2352,9 @@ sdcGUI <- function() {
     putd("varTab_selVar",varTab)
     size(varTab) <- c(120,400)
     add(mtmp, varTab)
-    
+
     rtmp = ggroup(container=mtmp, horizontal=FALSE)
-    
+
     tmp = gframe('<span weight="bold" size="medium">Categorical key variables</span>',
         container=rtmp,markup=TRUE)
     btmp = ggroup(container=tmp, horizontal=FALSE)
@@ -2365,7 +2365,7 @@ sdcGUI <- function() {
     catTab = gtable(data.frame(vars=keyVars, stringsAsFactors=FALSE), multiple=TRUE)
     size(catTab) <- c(120,150)
     add(tmp, catTab)
-    
+
     tmp = gframe('<span weight="bold" size="medium">Numerical key variables</span>',
         container=rtmp,markup=TRUE)
     btmp = ggroup(container=tmp, horizontal=FALSE)
@@ -2376,7 +2376,7 @@ sdcGUI <- function() {
     numTab = gtable(data.frame(vars=numVars, stringsAsFactors=FALSE), multiple=TRUE)
     size(numTab) <- c(120,150)
     add(tmp, numTab)
-    
+
     tmp = gframe('<span weight="bold" size="medium">Weight variable</span>',
         container=rtmp,markup=TRUE)
     btmp = ggroup(container=tmp, horizontal=FALSE)
@@ -2398,26 +2398,26 @@ sdcGUI <- function() {
     hTab = gtable(data.frame(vars=hVars, stringsAsFactors=FALSE), multiple=TRUE)
     size(hTab) <- c(120,50)
     add(tmp, hTab)
-    
+
     tmp = gframe('<span weight="bold" size="medium">Strata variable</span>',
         container=rtmp,markup=TRUE)
     btmp = ggroup(container=tmp, horizontal=FALSE)
     addSpring(btmp)
     gbutton(">>", container=btmp, handler=function(h,...) { ft(sTab, varTab, svalue(varTab), "sLen", 1) })
     gbutton("<<", container=btmp, handler=function(h,...) { ft(varTab, sTab, svalue(sTab), "sLen", 0) })
-    addSpring(btmp)    
+    addSpring(btmp)
     sTab = gtable(data.frame(vars=sVars, stringsAsFactors=FALSE), multiple=TRUE)
     size(sTab) <- c(120,100)
     add(tmp, sTab)
-    
-    
-    
+
+
+
     gseparator(container=selVar_windowGroup)
     selVar_windowButtonGroup = ggroup(container=selVar_windowGroup)
     addSpring(selVar_windowButtonGroup)
     b1 <- gbutton("Generate Strata Variable", container=selVar_windowButtonGroup, handler=function(h,...) {
           #confirmSelection_tmp(catTab[], numTab[], wTab[],hTab[],sTab[])
-          #confirmSelection_tmp(catTab[], numTab[], wTab[],hTab[],sTab[])    
+          #confirmSelection_tmp(catTab[], numTab[], wTab[],hTab[],sTab[])
           stVar_window = gwindow("Generate a strata variable", width=230, parent=selVar_window)
           stVar_windowGroup = ggroup(container=stVar_window, horizontal=FALSE)
           stVar_main = ggroup(container=stVar_windowGroup)
@@ -2450,7 +2450,7 @@ sdcGUI <- function() {
           gbutton("Ok", container=stVar_windowButtonGroup,
               handler=function(h,...) {
                 name <- "sdcMicroStrataVariable"
-                sVars <- sTab[]                
+                sVars <- sTab[]
                 if(length(sVars)==0)
                   gmessage("You have to select at least  one categoric variable to generate a strata variable.",
                       title="Information", icon="warning", parent=window)
@@ -2462,16 +2462,16 @@ sdcGUI <- function() {
                   dispose(stVar_window)
                   varTab_selVar=getd("varTab_selVar")
                   varTab_selVar[,] <- c(varTab_selVar[,],name)
-                  
+
                 }
-                
+
               })
           gbutton("Cancel ", container=stVar_windowButtonGroup, handler=function(h,...) { dispose(stVar_window) })
-          
+
         })
-    tooltip(b1) <- tt_genstrat 
+    tooltip(b1) <- tt_genstrat
     gbutton("Ok", container=selVar_windowButtonGroup,
-        handler=function(h,...) {          
+        handler=function(h,...) {
           # check if firstrun - if not reset script and dataset to original one
           #cat(paste(getd("keyLen"), getd("numLen"), getd("wLen"), getd("hLen"), "\n"))
           fr_do <- TRUE
@@ -2507,7 +2507,7 @@ sdcGUI <- function() {
                 keynofac <- keyV[!as.vector(sapply(keyV,function(x)is.factor(ActiveDataSet()[,x])))]
                 if(length(keynofac)>0){
                   keynofac <- paste(keynofac,collapse=",")
-                  
+
                   gmessage(paste("The variables ",keynofac," are selected as categoric but not recognized as being in the correct format.
                               This can be confirmed or changed in the next window, you can reopen this window by clicking \"Recode\"",sep=""),
                       title="Information", parent=window)
@@ -2516,14 +2516,14 @@ sdcGUI <- function() {
               }
             } else {
               gmessage("You have to select at least categoric key variable and optionally one weight variable, one cluster ID variable and/or several strata variables.",
-                  title="Information", icon="warning", parent=window)              
+                  title="Information", icon="warning", parent=window)
             }
           }
         })
     gbutton("Cancel ", container=selVar_windowButtonGroup, handler=function(h,...) { dispose(selVar_window) })
   }
-  
-  
+
+
   # function for gb1 (confirm selection)
   # needed sub functions
   # TODO: done - save selection for script/history
@@ -2535,7 +2535,7 @@ sdcGUI <- function() {
       stmp <- ""
       for( i in 1:length(t1) ) {
         stmp <- paste(stmp,t1[i]," [#:",length(unique(ActiveDataSet()[,t1[i]])),"]\n",sep="")
-      } 
+      }
       svalue(tab1) <- stmp
       enabled(ir_button) <- TRUE
       enabled(vk_button) <- TRUE
@@ -2600,7 +2600,7 @@ sdcGUI <- function() {
         stmp <- paste(stmp, t4[i]," [Mean size:",me,"]",sep="")
       }
       svalue(tab4) <- stmp
-    }else 
+    }else
       svalue(tab4) <- "not selected\n"
     if(length(t5)>0){
       stmp <- ""
@@ -2608,9 +2608,9 @@ sdcGUI <- function() {
         stmp <- paste(stmp,t5[i]," [#:",length(unique(ActiveDataSet()[,t5[i]])),"]\n",sep="")
       }
       svalue(tab5) <- stmp
-    }else 
+    }else
       svalue(tab5) <- "not selected\n"
-    
+
     # enable plot indivRisk button
     freqCalcIndivRisk()
     nm_risk_print_function()
@@ -2642,8 +2642,8 @@ sdcGUI <- function() {
     sdcObject <- createSdcObj(ActiveDataSet(),keyVars=t1,numVars=t2,weightVar=t3,hhId=t4,strataVar=t5,options=list(risk_k=0.01,risk_k2=0.05,filename=filename))
     dispose(xprogress)
     ActiveSdcObject(sdcObject)
-    writeVars(t1,t2,t3,t4,t5)    
-    
+    writeVars(t1,t2,t3,t4,t5)
+
   }
   # variableSelectionGroup function
   #       if re-clicked, prompt and ask if you want to reset all work and script done
@@ -2655,13 +2655,13 @@ sdcGUI <- function() {
     #  rmd("sdcObject")
     selVar()
   }
-  
+
   ## Menubar Functions
   vign <- function(...) print(vignette("gui_tutorial"))
   vign2 <- function(...) print(vignette("guidelines"))
   paind <- function(...)print(help(package="sdcMicro"))
-  
-  
+
+
   # Data - Load Dataset
   loadDataSet <- function(...) {
     xname <- gfile("Select file to load", parent=window, type="open" ,filter=list("R-Data"=list(patterns=c("*.rda", "*.RData","*.RDA","*.rdata","*.RDATA")), "All files" = list(patterns = c("*"))))
@@ -2684,7 +2684,7 @@ sdcGUI <- function() {
           x<-gdroplist(vards), parent=window,
           handler=function(x, ...) {
             Script.add(paste("activedataset <- ",svalue(x$obj),sep=""))
-            
+
             ActiveDataSet(svalue(x$obj))
           })
       if( existd("activeDataSet") ) {
@@ -2742,7 +2742,7 @@ sdcGUI <- function() {
 #  }
 #Saving to an R-Object from the GUI is not possibly due to CRAN policy!?
 #TODO: Maybe there is a possible work around.
-  
+
   saveToVariable <- function(...) {
     gmessage("Please use the function 'sdcGUIoutput' to assign the current dataset from the sdcGUI to a R-Object, e.g. 'datX <- sdcGUIoutput()'", title="Information", icon="warning",
         parent=window)
@@ -2810,7 +2810,7 @@ sdcGUI <- function() {
     csvfilename <- gedit()
     enabled(csvfilename) <- FALSE
     buttonHandler <- function(...){
-      gfile(text = "Open CSV File", type = "open", 
+      gfile(text = "Open CSV File", type = "open",
           filter=list("CSV files"=list(patterns=c("*.csv", "*.CSV")), "All files" = list(patterns = c("*"))),
           handler=function(h,...){
             svalue(csvfilename) <- h$file
@@ -2835,14 +2835,14 @@ sdcGUI <- function() {
                 },
                 error=function(e){
                   gmessage(paste("There was a problem while preparing your data: '",e,"'"), "Problem",
-                      icon="error")       
+                      icon="error")
                 })
             previewCSV()
           })
     }
-    
-    
-    
+
+
+
     #creates the actual preview inside the table, also the handler for all gui elements
     #beside the OK-button
     previewCSV <- function(...){
@@ -2861,14 +2861,14 @@ sdcGUI <- function() {
                   header=svalue(csvheader),
                   strip.white=svalue(csvstrip.white),
                   stringsAsFactors=svalue(csvstringsAsFactors),
-                  blank.lines.skip=svalue(csvblank.lines.skip), 
+                  blank.lines.skip=svalue(csvblank.lines.skip),
                   sep=svalue(csvseperator),
                   dec=svalue(csvdecimal),
                   quote=svalue(csvquotes),
                   skip=svalue(csvskip),
                   na.strings=strsplit(svalue(csvnastrings),",")[[1]])
               putd("colclasses",NA)
-              putd("changedTypes",FALSE)}, 
+              putd("changedTypes",FALSE)},
             error=function(e){svalue(statusbar) <- "read.table was not successful, please check your settings";
               error<-TRUE})
       }
@@ -2882,9 +2882,9 @@ sdcGUI <- function() {
       add(f, g, expand=TRUE)
       layout[6:10, 1:7, expand=TRUE] <- f
       putd("dframe",testimport)
-      
+
     }
-    
+
     #setup csv import gui
     statusbar <- gstatusbar("")
     csvfilebutton <- gbutton("...", handler=buttonHandler)
@@ -2909,7 +2909,7 @@ sdcGUI <- function() {
                 if(getd("changedTypes")==TRUE){
                   colclasses <- getd("colclasses")
                   colclassesSTR <- parseVarStr(colclasses)
-                }  
+                }
                 else{
                   colclasses <- NA
                   colclassesSTR <- "NA"
@@ -2923,7 +2923,7 @@ sdcGUI <- function() {
                     header=svalue(csvheader),
                     strip.white=svalue(csvstrip.white),
                     stringsAsFactors=svalue(csvstringsAsFactors),
-                    blank.lines.skip=svalue(csvblank.lines.skip), 
+                    blank.lines.skip=svalue(csvblank.lines.skip),
                     sep=svalue(csvseperator),
                     dec=svalue(csvdecimal),
                     quote=svalue(csvquotes),
@@ -2932,7 +2932,7 @@ sdcGUI <- function() {
                     na.strings=strsplit(svalue(csvnastrings),",")[[1]])
                 dname <- format(Sys.time(), "importedCSV_%H_%M")
                 cmdimp <- paste("activedataset <- read.table(\"",filename,"\"",
-                    ",fill=",svalue(csvfill), 
+                    ",fill=",svalue(csvfill),
                     ",header=",svalue(csvheader),
                     ",strip.white=",svalue(csvstrip.white),
                     ",stringsAsFactors=",svalue(csvstringsAsFactors),
@@ -2967,7 +2967,7 @@ sdcGUI <- function() {
                     header=svalue(csvheader),
                     strip.white=svalue(csvstrip.white),
                     stringsAsFactors=svalue(csvstringsAsFactors),
-                    blank.lines.skip=svalue(csvblank.lines.skip), 
+                    blank.lines.skip=svalue(csvblank.lines.skip),
                     sep=svalue(csvseperator),
                     dec=svalue(csvdecimal),
                     quote=svalue(csvquotes),
@@ -2983,11 +2983,11 @@ sdcGUI <- function() {
               },
               error=function(e){gmessage(paste("There was a problem while importing your data: '",e,"'"), "Problem",
                     icon="error")})
-          
+
         })
     csvdiscard <- gbutton("Cancel ", handler=function(...){dispose(importDialog)})
     csvadjustTypes <- gbutton("Adjust Types", handler=typDialog)
-    
+
     ftop <- gframe("Choose CSV-File:")
     gtop <- ggroup(horizontal=TRUE, container=ftop)
     add(ftop, csvfilename, expand=TRUE)
@@ -3022,8 +3022,8 @@ sdcGUI <- function() {
     add(importDialogFrame, statusbar)
     buttonHandler()
   }
-  
-  
+
+
   # Data - Export - Export CSV
   exportCSV <- function(...){
     if(existd("sdcObject")  == FALSE){
@@ -3037,7 +3037,7 @@ sdcGUI <- function() {
       layout <- glayout()
       csvfilename <- gedit()
       enabled(csvfilename) <- FALSE
-      
+
       buttonHandler <- function(...){
         gfile(text = "Save CSV File", type = "save", filter=list("CSV-Files"=list("*.csv")),handler=function(h,...){
               if(grepl("^.*\\.(csv|CSV)$", h$file)){
@@ -3048,7 +3048,7 @@ sdcGUI <- function() {
               }
             })
       }
-      
+
       #setup csv import gui
       if(existd("csvimportparameters")){
         ip <- getd("csvimportparameters")
@@ -3059,7 +3059,7 @@ sdcGUI <- function() {
             header=FALSE,
             strip.white=TRUE,
             stringsAsFactors=TRUE,
-            blank.lines.skip=TRUE, 
+            blank.lines.skip=TRUE,
             sep=",",
             dec=".",
             quote="'",
@@ -3067,7 +3067,7 @@ sdcGUI <- function() {
             colClasses=NULL,
             na.strings="NA")
       }
-      
+
       statusbar <- gstatusbar("")
       csvfilebutton <- gbutton("...", handler=buttonHandler)
       csvheader <- gcheckbox("row names", checked=ip$header)
@@ -3089,13 +3089,13 @@ sdcGUI <- function() {
             dispose(importDialog)
           })
       csvdiscard <- gbutton("Cancel ", handler=function(...){dispose(importDialog)})
-      
+
       #record export
       frame.html <- gframe("Generate report?")
-      radio.html <- gradio(c("no", "yes"), 
+      radio.html <- gradio(c("no", "yes"),
           horizontal=TRUE, container=frame.html)
-      
-      
+
+
       ftop <- gframe("Choose CSV-File:")
       gtop <- ggroup(horizontal=TRUE, container=ftop)
       add(ftop, csvfilename, expand=TRUE)
@@ -3116,11 +3116,11 @@ sdcGUI <- function() {
       layout[9,7, expand=FALSE] <- csvdiscard
       add(importDialogFrame, layout, expand=TRUE)
       #add(importDialogFrame, statusbar)
-      
+
     }
     buttonHandler()
   }
-  
+
   # Data - Import - Import SPSS
   importSPSS <- function(...){
     importDialog <- gwindow("Import SPSS", parent=window, width=100, height=100)
@@ -3130,15 +3130,15 @@ sdcGUI <- function() {
     layout <- glayout()
     filename <- gedit()
     enabled(filename) <- FALSE
-    
+
     buttonHandler <- function(...){
-      gfile(text = "Open SPSS File", type = "open", , 
+      gfile(text = "Open SPSS File", type = "open", ,
           filter=list("SPSS files"=list(patterns=c("*.sav", "*.SAV")),"All files" = list(patterns = c("*"))),
           handler=function(h,...){
             svalue(filename) <- h$file
           })
     }
-    
+
     #setup SPSS import gui
     statusbar <- gstatusbar("")
     filebutton <- gbutton("...", handler=buttonHandler)
@@ -3160,7 +3160,7 @@ sdcGUI <- function() {
                 putd("importFilename",svalue(filename))
                 filename=gsub("\\\\","/",svalue(filename))
                 cmdimp <- paste("activedataset <- spss.get(\"",filename,"\"",
-                    ",use.value.labels=",svalue(check.use.value.labels), 
+                    ",use.value.labels=",svalue(check.use.value.labels),
                     ",lowernames=",svalue(check.lowernames),
                     ",force.single=",svalue(check.force.single),
                     ",charfactor=",svalue(check.charfactor),
@@ -3188,15 +3188,15 @@ sdcGUI <- function() {
                 if(existd("sdcObject"))
                   rmd("sdcObject")
                 selVar()
-                
+
               },error=function(e){
                 gmessage(paste("There was a problem while importing your SPSS file: '",e,"'"),"Import Error!",icon="error")
               })
-          
+
         })
     csvdiscard <- gbutton("Cancel ", handler=function(...){dispose(importDialog)})
     csvadjustTypes <- gbutton("Adjust Types", handler=typDialog)
-    
+
     ftop <- gframe("Choose SPSS-File:")
     gtop <- ggroup(horizontal=TRUE, container=ftop)
     add(ftop, filename, expand=TRUE)
@@ -3214,7 +3214,7 @@ sdcGUI <- function() {
     add(importDialogFrame, layout, expand=TRUE)
     buttonHandler()
   }
-  
+
   # Data - Export - Export SPSS
   exportSPSS <- function(...){
     if(existd("activeDataSet")  == FALSE){
@@ -3230,7 +3230,7 @@ sdcGUI <- function() {
       codefilename <- gedit()
       enabled(datafilename) <- FALSE
       enabled(codefilename) <- FALSE
-      
+
       databuttonHandler <- function(...){
         gfile(text = "Save Data File", type = "save", handler=function(h,...){
               if(grepl("^.*\\.(dat)$", h$file)){
@@ -3241,7 +3241,7 @@ sdcGUI <- function() {
               }
             })
       }
-      
+
       codebuttonHandler <- function(...){
         gfile(text = "Save SPS File", type = "save", filter=list(".sps"=list("*.sps")),handler=function(h,...){
               if(grepl("^.*\\.(sps|SPS)$", h$file)){
@@ -3252,7 +3252,7 @@ sdcGUI <- function() {
               }
             })
       }
-      
+
       #setup sas export gui
       datafilebutton <- gbutton("...", handler=databuttonHandler)
       codefilebutton <- gbutton("...", handler=codebuttonHandler)
@@ -3269,18 +3269,18 @@ sdcGUI <- function() {
             dispose(importDialog)
           })
       csvdiscard <- gbutton("Cancel ", handler=function(...){dispose(importDialog)})
-      
+
       #record export
       frame.html <- gframe("Generate report?")
-      radio.html <- gradio(c("no", "yes"), 
+      radio.html <- gradio(c("no", "yes"),
           horizontal=TRUE, container=frame.html)
-      
+
       fdata <- gframe("Choose Data-File (Contains exported data as freetext):")
       gdata <- ggroup(horizontal=TRUE, container=fdata)
       add(fdata, datafilename, expand=TRUE)
       add(fdata, datafilebutton)
       layout[1,1:7] <- fdata
-      
+
       fcode <- gframe("Choose Code-File (Contains SPSS Code for import):")
       gcode <- ggroup(horizontal=TRUE, container=fcode)
       add(fcode, codefilename, expand=TRUE)
@@ -3291,11 +3291,11 @@ sdcGUI <- function() {
       layout[4,7, expand=FALSE] <- csvdiscard
       add(importDialogFrame, layout, expand=TRUE)
       #add(importDialogFrame, statusbar)
-      
+
     }
-    
+
   }
-  
+
   # Data - Import - Import STATA
   loadSTATA <- function(...){
     importDialog <- gwindow("Import STATA", parent=window, width=100, height=100)
@@ -3305,15 +3305,15 @@ sdcGUI <- function() {
     layout <- glayout()
     filename <- gedit()
     enabled(filename) <- FALSE
-    
+
     buttonHandler <- function(...){
-      gfile(text = "Open STATA File", 
+      gfile(text = "Open STATA File",
           filter=list("STATA files"=list(patterns=c("*.dta", "*.DTA")),"All files" = list(patterns = c("*"))),
           type = "open", handler=function(h,...){
             svalue(filename) <- h$file
           })
     }
-    
+
     #setup STATA import gui
     statusbar <- gstatusbar("")
     filebutton <- gbutton("...", handler=buttonHandler)
@@ -3323,7 +3323,7 @@ sdcGUI <- function() {
           tryCatch({
                 wd <- WaitingDialog(Parent=importDialog)
                 focus(wd) <- TRUE
-                
+
                 df <- read.dta(svalue(filename),
                     convert.factors = svalue(check.use.value.labels))
                 putd("importFilename",svalue(filename))
@@ -3353,15 +3353,15 @@ sdcGUI <- function() {
                 if(existd("sdcObject"))
                   rmd("sdcObject")
                 selVar()
-                
+
               },error=function(e){
                 gmessage(paste("There was a problem while importing your STATA file: ",e,"'"),"Import Error!",icon="error")
               })
-          
+
         })
     csvdiscard <- gbutton("Cancel ", handler=function(...){dispose(importDialog)})
     csvadjustTypes <- gbutton("Adjust Types", handler=typDialog)
-    
+
     ftop <- gframe("Choose STATA-File:")
     gtop <- ggroup(horizontal=TRUE, container=ftop)
     add(ftop, filename, expand=TRUE)
@@ -3376,7 +3376,7 @@ sdcGUI <- function() {
     add(importDialogFrame, layout, expand=TRUE)
     buttonHandler()
   }
-  
+
   # Data - Export - Export STATA
   exportSTATA <- function(...){
     if(existd("sdcObject")  == FALSE){
@@ -3393,7 +3393,7 @@ sdcGUI <- function() {
       edit.version <- gedit("7")
       check.dates <- gcheckbox("convert dates to STATA-dates", checked=TRUE)
       combo.convert.factors <- gcombobox(c("labels","string","numeric","codes"))
-      
+
       buttonHandler <- function(...){
         gfile(text = "Save STATA File", type = "save", filter=list(".dta"=list("*.dta")),handler=function(h,...){
               if(grepl("^.*\\.(dta|DTA)$", h$file)){
@@ -3404,7 +3404,7 @@ sdcGUI <- function() {
               }
             })
       }
-      
+
       #setup stata export gui
       filebutton <- gbutton("...", handler=buttonHandler)
       csvaccept <- gbutton(	"OK", handler=function(...){
@@ -3421,12 +3421,12 @@ sdcGUI <- function() {
             dispose(importDialog)
           })
       csvdiscard <- gbutton("Cancel ", handler=function(...){dispose(importDialog)})
-      
+
       #record export
       frame.html <- gframe("Generate report?")
-      radio.html <- gradio(c("no", "yes"), 
+      radio.html <- gradio(c("no", "yes"),
           horizontal=TRUE, container=frame.html)
-      
+
       ftop <- gframe("Choose STATA-File:")
       gtop <- ggroup(horizontal=TRUE, container=ftop)
       add(ftop, filename, expand=TRUE)
@@ -3445,11 +3445,11 @@ sdcGUI <- function() {
       layout[5,7, expand=FALSE] <- csvdiscard
       add(importDialogFrame, layout, expand=TRUE)
       #add(importDialogFrame, statusbar)
-      
+
     }
-    
+
   }
-  
+
   # Data - Import - Import SAS
   importSAS <- function(...){
     importDialog <- gwindow("Import SAS", parent=window, width=100, height=100)
@@ -3459,15 +3459,15 @@ sdcGUI <- function() {
     layout <- glayout()
     filename <- gedit()
     enabled(filename) <- FALSE
-    
+
     buttonHandler <- function(...){
-      gfile(text = "Open SAS Export File", 
+      gfile(text = "Open SAS Export File",
           filter=list("SAS XPORT"=list(patterns=c("*.xpt", "*.XPT")),"All files" = list(patterns = c("*"))),
           type = "open", handler=function(h,...){
             svalue(filename) <- h$file
           })
     }
-    
+
     #setup SAS import gui
     statusbar <- gstatusbar("")
     filebutton <- gbutton("...", handler=buttonHandler)
@@ -3481,7 +3481,7 @@ sdcGUI <- function() {
                 filename=gsub("\\\\","/",svalue(filename))
                 cmdimp <- paste("activedataset <- sasxport.get(\"",filename,"\")",sep="")
                 putd("cmdimp",cmdimp)
-                
+
                 dname <- format(Sys.time(), "importedSAS_%H_%M")
                 putd("activeDataSet", df)
                 putd("dataSetName",dname)
@@ -3502,15 +3502,15 @@ sdcGUI <- function() {
                 if(existd("sdcObject"))
                   rmd("sdcObject")
                 selVar()
-                
+
               },error=function(e){
                 gmessage(paste("There was a problem while importing your SAS file: '",e,"'"),"Import Error!",icon="error")
               })
-          
+
         })
     csvdiscard <- gbutton("Cancel ", handler=function(...){dispose(importDialog)})
     csvadjustTypes <- gbutton("Adjust Types", handler=typDialog)
-    
+
     ftop <- gframe("Choose SAS-File:")
     gtop <- ggroup(horizontal=TRUE, container=ftop)
     add(ftop, filename, expand=TRUE)
@@ -3521,7 +3521,7 @@ sdcGUI <- function() {
     add(importDialogFrame, layout, expand=TRUE)
     buttonHandler()
   }
-  
+
   # Data - Export - Export SAS
   exportSAS <- function(...){
     if(existd("sdcObject")  == FALSE){
@@ -3539,7 +3539,7 @@ sdcGUI <- function() {
       enabled(codefilename) <- FALSE
       edit.dataname <- gedit("rdata")
       combo.validvarname <- gcombobox(c("<=6",">=7"), selected=2)
-      
+
       databuttonHandler <- function(...){
         gfile(text = "Save Data File", type = "save", handler=function(h,...){
               if(grepl("^.*\\.(dat)$", h$file)){
@@ -3550,7 +3550,7 @@ sdcGUI <- function() {
               }
             })
       }
-      
+
       codebuttonHandler <- function(...){
         gfile(text = "Save SAS File", type = "save", filter=list(".sas"=list("*.sas")),handler=function(h,...){
               if(grepl("^.*\\.(sas|SAS)$", h$file)){
@@ -3561,7 +3561,7 @@ sdcGUI <- function() {
               }
             })
       }
-      
+
       #setup sas export gui
       datafilebutton <- gbutton("...", handler=databuttonHandler)
       codefilebutton <- gbutton("...", handler=codebuttonHandler)
@@ -3581,24 +3581,24 @@ sdcGUI <- function() {
             dispose(importDialog)
           })
       csvdiscard <- gbutton("Cancel ", handler=function(...){dispose(importDialog)})
-      
+
       #record export
       frame.html <- gframe("Generate report?")
-      radio.html <- gradio(c("no", "yes"), 
+      radio.html <- gradio(c("no", "yes"),
           horizontal=TRUE, container=frame.html)
-      
+
       fdata <- gframe("Choose Data-File (Contains exported data as freetext):")
       gdata <- ggroup(horizontal=TRUE, container=fdata)
       add(fdata, datafilename, expand=TRUE)
       add(fdata, datafilebutton)
       layout[1,1:7] <- fdata
-      
+
       fcode <- gframe("Choose Code-File (Contains SAS Code for import):")
       gcode <- ggroup(horizontal=TRUE, container=fcode)
       add(fcode, codefilename, expand=TRUE)
       add(fcode, codefilebutton)
       layout[2,1:7] <- fcode
-      
+
       fparams <- gframe("SAS-Parameters:")
       glayout <- glayout(container=fparams)
       glayout[1,1, anchor=c(-1,0)] <- glabel("future SAS data set name:")
@@ -3613,13 +3613,13 @@ sdcGUI <- function() {
       #add(importDialogFrame, statusbar)
     }
   }
-  
+
   #outdir is the name of the exported data file from the different export dialogs
   exportReport <- function(...){
     if(existd("sdcObject")){
       reportDialog <- gwindow("Generate Report", parent=window, width=400, height=300)
       reportDialogG <- ggroup(container=reportDialog, horizontal=FALSE)
-      
+
       repTitle <- gedit(width=100)
       repType <- gradio(c("internal (detailled) report","external (overview) report"), horizontal=TRUE)
       svalue(repTitle) <- "SDC-Report"
@@ -3627,7 +3627,7 @@ sdcGUI <- function() {
       add(reportDialogTitleFrame,repTitle)
       reportDialogFrame <- gframe("Report Type:", container=reportDialogG, horizontal=FALSE)
       add(reportDialogFrame,repType)
-      
+
       reportDialogOutFrame <- gframe("Output Type:", container=reportDialogG, horizontal=FALSE)
       outputRadio <- gradio(c("HTML", "LATEX", "TEXT"), horizontal=TRUE, container=reportDialogOutFrame)
       okbutton <- gbutton("OK", container=reportDialogG, handler=function(h,...){
@@ -3638,7 +3638,7 @@ sdcGUI <- function() {
             }else{
               if(svalue(outputRadio)=="LATEX") {
                 exportFileName <- gfile("Select file to save report to", parent=window, type="save" ,filter=list("LATEX"=list(patterns=c("*.tex")), "All files" = list(patterns = c("*"))))
-              } 
+              }
               if (svalue(outputRadio)=="HTML") {
                 exportFileName <- gfile("Select file to save report to", parent=window, type="save" ,filter=list("HTML"=list(patterns=c("*.html", "*.htm")), "All files" = list(patterns = c("*"))))
               }
@@ -3648,13 +3648,13 @@ sdcGUI <- function() {
             }
             outdir <- dirname(exportFileName)
             filename <- strsplit(basename(exportFileName),"\\.")[[1]][1]
-            
+
             internal <- FALSE
             if ( svalue(repType, index=TRUE) == 1 ) {
               internal <- TRUE
             }
             report(
-                obj, 
+                obj,
                 outdir=outdir,
                 filename=filename,
                 format=svalue(outputRadio),
@@ -3662,20 +3662,20 @@ sdcGUI <- function() {
                 internal=internal
             )
             dispose(reportDialog)
-          })      
+          })
     }else{
       gmessage("No sdc object found to generate report.", title="Information", icon="warning", parent=window)
     }
   }
-  
+
   # Waiting Dialog
-  WaitingDialog <- function(parent, text="<b><big>Importing Data, Please Wait!</big></b>", 
+  WaitingDialog <- function(parent, text="<b><big>Importing Data, Please Wait!</big></b>",
       header="Importing!", Parent=NULL){
     window <- gwindow(header, parent=Parent, width=100, height=50)
     glabel(text, markup=TRUE,container=window)
     return(window)
   }
-  
+
   # Script - New Script
   newScript <- function(...) {
     ns_do <- gconfirm("A new script will be started.\nAre you sure?", title="Information",
@@ -3684,7 +3684,7 @@ sdcGUI <- function() {
       Script.new()
     }
   }
-  
+
   # Script - Save Script
   saveScript <- function(...) {
     saveScriptToFile <- function(fileName, ...) {
@@ -3698,7 +3698,7 @@ sdcGUI <- function() {
     if( existd("activeScript") ) {
       xname <- gfile("Select file to save Script", type="save", parent=window,
           filter=list("Script files" = list(patterns = c("*.sdcMicroScript")),"All files" = list(patterns = c("*.*"))))
-      
+
       if( xname != "" ) {
         saveScriptToFile(xname)
       }
@@ -3707,14 +3707,14 @@ sdcGUI <- function() {
           parent=window)
     }
   }
-  
+
   # Script - Load Script
   loadScript <- function(...) {
     # open file browser and load the needed script
-    xname <- gfile("Select script file to open.", parent=window, type="open", 
+    xname <- gfile("Select script file to open.", parent=window, type="open",
         filter=
-            
-            list("Script files" = list(patterns = c("*.sdcMicroScript")),"All files" = list(patterns = c("*.*")))) 
+
+            list("Script files" = list(patterns = c("*.sdcMicroScript")),"All files" = list(patterns = c("*.*"))))
     if( xname != '' ) {
       fo <- file(xname)
       cmdtmp <- list(cmd=readLines(fo))
@@ -3724,7 +3724,7 @@ sdcGUI <- function() {
       Script.run()
     }
   }
-  
+
   # Script - View Script
   # TODO: implement view script
   viewScript <- function(...) {
@@ -3787,17 +3787,17 @@ sdcGUI <- function() {
       gbutton("Run", container=tmp, handler=function(h,...) runCMDhist() )
       addSpring(saveCancelGroup)
       gbutton("Close", container=saveCancelGroup, handler=function(h,...) quitEditScriptWindow() )
-      
+
       add(scriptEditWindow, scriptWidget)
     }
   }
-  
+
   # Script - Run Script
   runScript <- function(...) {
     # dialog and ask if you want to run the whole script on this dataset
     Script.run()
   }
-  
+
   # GUI - Quit
   quitGUI <- function(...) {
     val <- gconfirm("Do you really want to close the window?", parent=window)
@@ -3835,7 +3835,7 @@ sdcGUI <- function() {
       sdcGUI()
     }
   }
-  
+
   ## initialize
   # set first run
   putd("firstRun", TRUE)
@@ -3849,9 +3849,9 @@ sdcGUI <- function() {
     ActiveDataSet(dataSetName)
   }
   putd("dataSetName", dataSetName)
-  
+
   #putd("importFileName", "No File imported!")
-  
+
   ## create window
   window = gwindow("sdcMicro GUI")
   addHandlerUnrealize(window, handler = function(h,...) {
@@ -3861,7 +3861,7 @@ sdcGUI <- function() {
         else
           return(TRUE)              # don't destroy
       })
-  
+
   ## Menubar
   mbar = list()
   mbar$GUI$Quit$handler = quitGUI
@@ -3901,8 +3901,8 @@ sdcGUI <- function() {
   mbar$Help$"R sdcMicro Help Files"$"Shuffling"$handler=function(...)helpR("shuffle")
   mbar$Help$"R sdcMicro Help Files"$"Data Utility (continuous)"$handler=function(...)helpR("dUtility")
   mbar$Undo$"Undo last action"$handler=OneStepBack
-  
-  
+
+
   ## layout
   mainGroupX = ggroup(container=window, horizontal=FALSE)
   # Start - add menu
@@ -3915,9 +3915,9 @@ sdcGUI <- function() {
   # End - add menu
   # Start - variable Selection Container
   varSelGroup = ggroup(container=mainGroup, horizontal=FALSE)
-  
+
   varSelGroupButton = ggroup(container=varSelGroup, horizontal=FALSE)
-  
+
   glabel('<span foreground="blue" size="x-large" weight="bold">Loaded data set:</span>', container=varSelGroupButton,markup=TRUE)
   if( existd("dataSetName") ) {
     if(getd("dataSetName")!=""){
@@ -3931,14 +3931,14 @@ sdcGUI <- function() {
       handler=function(h,...) confirmSelection())
   tooltip(gb1) <- "(Re)-identify categorical, numerical variables (and the weight variable, the cluster ID variable and the strata variables)"
   enabled(gb1) <- FALSE
-  
+
   gb2 = gbutton(text="Remove direct identifiers", container=varSelGroupButton,
       handler=function(h,...) removeDirectID_menu())
   tooltip(gb2) <- "Remove variables which can be used as direct identifiers."
   enabled(gb2) <- FALSE
-  
-  
-  
+
+
+
   mtmp = ggroup(container=varSelGroup, horizontal=FALSE, expand=TRUE)
   tmp = gframe('<span foreground="blue" size="x-large" weight="bold">Selected key variables</span>', container=mtmp,
       horizontal=FALSE,markup=TRUE)
@@ -3973,18 +3973,18 @@ sdcGUI <- function() {
   tab5 <- glabel("not selected\n")#strata info
   tooltip(tab5) <- tt_selVar
   add(tmpSt, tab5, expand=TRUE)
-  
-  
-  
+
+
+
   # End - variable Selection Container
   # Start - Categorical Container
-  
-  
-  
+
+
+
   tmpCR = gframe('<span foreground="blue" size="x-large" weight="bold">Risk</span>', container=mainGroupCat, horizontal=FALSE,markup=TRUE)
   tmpCP = gframe('<span foreground="blue" size="x-large" weight="bold">Protection</span>', container=mainGroupCat, horizontal=FALSE,markup=TRUE)
   tmpCU = gframe('<span foreground="blue" size="x-large" weight="bold">Information Loss</span>', container=mainGroupCat, horizontal=FALSE,markup=TRUE)
-  
+
   fc_tmp = gframe('<span size="medium" weight="bold">Frequency calculations</span>',
       container=tmpCR, expand=TRUE,markup=TRUE)
   #tmp = gframe("(Individual) risk computation", container=fc_tmp)
@@ -3999,46 +3999,46 @@ sdcGUI <- function() {
   vk_button = gbutton("View Observations violating 3-anonymity", container=vkGroupButton,
       handler=function(h, ...) viewkanon())
   enabled(vk_button) <- FALSE
-  
-  
+
+
   ir_tmp = gframe('<span size="medium" weight="bold">Risk for categorical key variables</span>',
       container=tmpCR, horizontal=FALSE,markup=TRUE)
   ir_print = gtext(text="", width=280, height=190)
   tooltip(ir_print)<- tt_ir
   add(ir_tmp, ir_print)
-  
+
   vh_button = gbutton("View observations with risk above the benchmark", container=ir_tmp,
       handler=function(h, ...) viewhigh())
   enabled(vh_button) <- FALSE
   tooltip(vh_button) <- "Show 20 observations with highest risk"
-  
+
   # Start - l-Diversity Container
   ld_button1 = gbutton("l-Diversity",
       handler=function(h,...) ldiv1() )
   tooltip(ld_button1) <- tt_ld1
   add(ir_tmp, ld_button1)
   enabled(ld_button1) <- FALSE
-  
+
   tmp = gframe('<span size="medium" weight="bold">Recodings</span>', container=tmpCU,markup=TRUE,horizontal=FALSE)
   glabel('<span background="#ffffff">For each variable, the following key figures are computed:
-          the number of categories 
-          the mean size of the groups 
+          the number of categories
+          the mean size of the groups
           the size of smallest group.
           Original values in brackets.</span>',markup=TRUE,container=tmp)
-  
-  recode_summary <- gtable(returnRecode()) 
-  size(recode_summary) <- c(240,260)      
+
+  recode_summary <- gtable(returnRecode())
+  size(recode_summary) <- c(240,260)
   tooltip(recode_summary)<- "Recoded values"
   add(tmp,recode_summary)
   #add(tmp, recode_summary)
-  
+
   tmp = gframe('<span size="medium" weight="bold">Suppressions</span>', container=tmpCU,markup=TRUE)
   fc_summary = gtext(text="", width=240, height=180)
   tooltip(fc_summary)<- "Supressed values"
   add(tmp, fc_summary)
-  
-  
-  
+
+
+
   # End - indivRisk Container
   # Start - globalRecode Container
   vc_button1 = gbutton("Recode", handler=function(h, ...) vc() )
@@ -4064,17 +4064,17 @@ sdcGUI <- function() {
   tooltip(ls_button1) <- tt_ls1
   enabled(ls_button1) <- FALSE
   add(tmpCP, ls_button1)
-  ir_button = gbutton("Local supression (threshold - indiv.risk)", 
+  ir_button = gbutton("Local supression (threshold - indiv.risk)",
       handler=function(h, ...) plotIndivRisk())
   add(tmpCP, ir_button)
   tooltip(ir_button) <- tt_pir
   enabled(ir_button) <- FALSE
-  
+
   pram_button2 = gbutton("View pram output",
       handler=function(h,...) viewpram1() )
   add(tmpCP, pram_button2)
   enabled(pram_button2) <- FALSE
-  
+
   #globalRecodeGroupRight = ggroup(container=globalRecodeGroup, horizontal=FALSE)
   #tmp = gframe("Experts only", container=globalRecodeGroupRight)
   #gr_button2 = gbutton("Manual R commands", handler=function(h, ...) scriptWindow() )
@@ -4082,8 +4082,8 @@ sdcGUI <- function() {
   #enabled(gr_button2) <- FALSE
   #add(tmp, gr_button2)
   #addSpring(tmp)
-  
-  
+
+
   # End - localSupp Container
   # Start - Continous Container
   tmpR = gframe('<span foreground="blue" size="x-large" weight="bold">Risk</span>', container=mainGroupCont,horizontal=FALSE,markup=TRUE)
@@ -4091,25 +4091,25 @@ sdcGUI <- function() {
   tmpU = gframe('<span foreground="blue" size="x-large" weight="bold">Information Loss</span>', container=mainGroupCont,horizontal=FALSE,markup=TRUE)
   tmp1 = ggroup(container=tmp, horizontal=FALSE)
   addSpring(tmp1)
-  
+
   nm_button2 = gbutton("Microaggregation", handler=function(h,...) nm2() )
   tooltip(nm_button2) <- tt_ma
   add(tmpP, nm_button2)
   enabled(nm_button2) <- FALSE
-  
+
   nm_button1 = gbutton("Add noise", handler=function(h,...) nm1() )
   tooltip(nm_button1) <- tt_noi
   add(tmpP, nm_button1)
   enabled(nm_button1) <- FALSE
-  
-  
-  
+
+
+
   shuffle_button1 = gbutton("Shuffling", handler=function(h,...) shuffle1() )
   tooltip(shuffle_button1) <- tt_shuffle
   add(tmpP, shuffle_button1)
   enabled(shuffle_button1) <- FALSE
-  
-  
+
+
 #  addSpring(tmp1)
 #  nm_button3 = gbutton("Recalculate risk", handler=function(h,...) nm_risk_print_function() )
 #  tooltip(nm_button3) <- tt_rr
