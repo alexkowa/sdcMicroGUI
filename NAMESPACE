@@ -1,4 +1,9 @@
 importFrom("tools","Rd2txt")
+importFrom("grDevices", "dev.cur", "dev.set")
+importFrom("graphics", "abline", "hist")
+importFrom("stats", "as.formula", "ecdf", "ftable", "mad", "median","quantile", "runif")
+importFrom("utils", "capture.output", "download.file", "help","old.packages", "packageVersion",
+  "read.table","update.packages", "vignette", "write.table")
 import(vcd, foreign, Hmisc,tcltk)
 export(plot.indivRisk,sdcGUI,sdcGUIoutput)
 import(cairoDevice, gWidgetsRGtk2,sdcMicro,gWidgets)

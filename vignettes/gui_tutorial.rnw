@@ -20,6 +20,16 @@
 \newcommand{\boma}[1]{\mbox{\boldmath ${#1}$}}
 \newcommand{\sdcMicro}{\texttt{sdcMicro}}
 \newcommand{\sdcMicroGUI}{\texttt{sdcMicroGUI}}
+\makeatletter
+\DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\mathrm}
+\DeclareOldFontCommand{\sf}{\normalfont\sffamily}{\mathsf}
+\DeclareOldFontCommand{\tt}{\normalfont\ttfamily}{\mathtt}
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
+\DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}
+\DeclareOldFontCommand{\sl}{\normalfont\slshape}{\@nomath\sl}
+\DeclareOldFontCommand{\sc}{\normalfont\scshape}{\@nomath\sc}
+
+
 %\VignetteIndexEntry{Tutorial for sdcMicroGUI}
 \title{
 	\vspace{1cm}
@@ -123,13 +133,7 @@ also click on the menu item \textit{GUI} $\rightarrow$ \textit{Check
 for Updates}; this should be done
 regularly.     
     
-If your organization uses a proxy server to connect to the Internet, automatic
-access of R is usually restricted, but users can access the necessary Internet
-connection from within \R . If you have a proxy server, just type the following
-into the R-Console:       
-\begin{lstlisting}
-setInternet2(TRUE)
-\end{lstlisting}
+
 This will allow you to install the packages.
 
 \section{Open sdcMicroGUI and Import Data}
