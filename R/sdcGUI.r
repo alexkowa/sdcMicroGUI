@@ -6,6 +6,9 @@
 #require(sdcMicro)
 
 sdcGUI <- function() {
+  .Deprecated("sdcMicro::sdcApp")
+  warning("The new version of the graphical user interface for the package sdcMicro(>5.0.0),\n is directly included in the sdcMicro(>5.0.0) package and can be started with the function sdcMicro::sdcApp(). \n This version of the GUI will be no longer maintained. USE WITH CAUTION!")
+  gmessage("The new version of the graphical user interface for the package sdcMicro(>5.0.0), is directly included in the sdcMicro(>5.0.0) package and can be started with the function sdcMicro::sdcApp(). This version of the GUI will be no longer maintained. USE WITH CAUTION!", title="Information", icon="warning")
   if(!is.null(options("quitRwithsdcGUI")[[1]]))#If started via windows binarybuild, auto start update
     updates2()
   updates22 <- function(...)updates2(restart=TRUE)

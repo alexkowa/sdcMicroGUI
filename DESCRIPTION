@@ -1,16 +1,17 @@
 Package: sdcMicroGUI    
 Type: Package    
 Title: Graphical User Interface for Package sdcMicro    
-Version: 1.3.0 
-Date: 2016-08-16
+Version: 1.4.0 
+Date: 2016-12-06
 Author: Alexander Kowarik, Matthias Templ, Bernhard Meindl, Francois Fonteneau    
 Maintainer: Alexander Kowarik <alexander.kowarik@statistik.gv.at>
-Description: A point and click graphical user interface based on top of the    
-    'sdcMicro' package to create anonymized data set. The graphical user    
-    interface provides full reproducibility of any result via the script menu    
-    in the GUI.    
+Description: DEPRECATED: A new version of the graphical user interface is available
+  directly in the package sdcMicro via function sdcApp(). A point and click graphical
+  user interface based  on top of the 'sdcMicro' package to create anonymized data set.
+  The graphical user interface provides full reproducibility of any result via the
+  script menu in the GUI.    
 Depends:    
-    sdcMicro (>= 4.5.0),    
+    sdcMicro (< 5.0.0),    
     gWidgetsRGtk2,gWidgets,
     tcltk,    
     cairoDevice    
